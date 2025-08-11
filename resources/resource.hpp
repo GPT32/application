@@ -1,0 +1,51 @@
+#pragma once
+
+/** @brief Application controls. */
+#define IDC_BUTTON_SEND 1000
+#define IDC_COMBOBOX 1001
+#define IDC_EDIT 1002
+#define IDC_EDIT_API_KEY 1003
+#define IDC_EDIT_INSTRUCTIONS 1004
+#define IDC_GROUPBOX_MODEL 1005
+#define IDC_TREEVIEW 1006
+#define IDC_RICHEDIT 1007
+#define IDC_STATIC_ABOUT 1008
+#define IDC_STATIC_API_KEY 1009
+#define IDC_STATIC_ICON 1010
+#define IDC_STATIC_INSTRUCTIONS 1011
+#define IDC_STATIC_INTRO 1012
+
+/** @brief Dialog windows. */
+#define IDD_ABOUT_DIALOG 2000
+#define IDD_API_KEY_DIALOG 2001
+#define IDD_INSTRUCTIONS_DIALOG 2002
+
+/** @brief Main application icon. */
+#define IDI_ICON 3000
+
+/** @brief Main menu. */
+#define IDM_MENU 4000
+#define IDM_FILE_NEW_PROJECT 4001
+#define IDM_FILE_NEW_CHAT 4002
+#define IDM_FILE_DELETE_PROJECT 4003
+#define IDM_FILE_DELETE_CHAT 4004
+#define IDM_FILE_EXIT 4005
+#define IDM_EDIT_API_KEY 4006
+#define IDM_EDIT_INSTRUCTIONS 4007
+#define IDM_VIEW_ALWAYS_ON_TOP 4008
+#define IDM_HELP_ISSUE 4009
+#define IDM_HELP_FEATURE 4010
+#define IDM_HELP_ABOUT 4011
+
+/** @brief Main window dimensions */
+#define DIALOG_BUTTON_HEIGHT 24
+#define MAIN_WINDOW_WIDTH 1024
+#define MAIN_WINDOW_HEIGHT 768
+#define MAIN_WINDOW_BUTTON_HEIGHT 26
+#define MAIN_WINDOW_STATIC_HEIGHT 20
+#define SPACING 5
+#define PADDING (SPACING * 2)
+
+/** @brief User messages. */
+#define WM_USER_API_RESPONSE (WM_USER + 1)
+#define WM_USER_SCROLL_TO_BOTTOM (WM_USER + 2)

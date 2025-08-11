@@ -1,0 +1,46 @@
+{
+  "buildPresets": [
+    {
+      "configurePreset": "msvc-configure",
+      "description": "Build using MSVC with Ninja",
+      "displayName": "MSVC Build",
+      "name": "msvc-build",
+      "targets": ["all"]
+    }
+  ],
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 30,
+    "patch": 5
+  },
+  "configurePresets": [
+    {
+      "name": "shared",
+      "description": "Shared settings for all platforms",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "APP_AUTHOR": "Steve Rivera",
+        "APP_DESCRIPTION": "Minimal ChatGPT client for Windows",
+        "APP_ID": "gpt32",
+        "APP_NAME": "GPT32",
+        "APP_REPO": "https://github.com/gpt32/application",
+        "APP_VERSION": "0.0.0",
+        "CMAKE_CXX_STANDARD": "23"
+      },
+      "generator": "Ninja"
+    },
+    {
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "cl"
+      },
+      "description": "Configures the project for MSVC",
+      "displayName": "MSVC Configure",
+      "hidden": false,
+      "inherits": "shared",
+      "name": "msvc-configure"
+    }
+  ],
+  "version": 3
+}

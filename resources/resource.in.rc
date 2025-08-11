@@ -1,0 +1,126 @@
+#include "resource.hpp"
+#include <windows.h>
+
+/**
+ * Application icon.
+ */
+IDI_ICON ICON "..\\assets\\icon.ico"
+
+/**
+ * Metadata about the application.
+ *
+ * The "StringFileInfo" block defines version strings and
+ * specifies the language and code page for those strings.
+ *
+ * - 0409 = English (United States)
+ * - 04B0 = Unicode (UTF-16)
+ *
+ * The "VarFileInfo" block indicates that this application
+ * supports English (0x409) using the Windows ANSI code
+ * page 1252 (Latin-1, Western European).
+ */
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     @WIN32_APP_VERSION@
+PRODUCTVERSION  @WIN32_APP_VERSION@
+FILEFLAGS       VS_FF_PRERELEASE
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_APP
+FILESUBTYPE     VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName",        "@APP_AUTHOR@"
+            VALUE "FileDescription",    "@APP_DESCRIPTION@"
+            VALUE "FileVersion",        "@APP_VERSION@"
+            VALUE "InternalName",       "@APP_ID@"
+            VALUE "LegalCopyright",     "2025 @APP_AUTHOR@"
+            VALUE "OriginalFilename",   "@APP_ID@.exe"
+            VALUE "ProductName",        "@APP_NAME@"
+            VALUE "ProductVersion",     "@APP_VERSION@"
+            VALUE "Author",             "@APP_AUTHOR@"
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+/**
+ * Defines the main application menu and its commands.
+ *
+ * Ampersands indicate mnemonic keys.
+ */
+IDM_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New Project",                IDM_FILE_NEW_PROJECT
+        MENUITEM "New &Chat",                   IDM_FILE_NEW_CHAT
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete Project",             IDM_FILE_DELETE_PROJECT
+        MENUITEM "Delete Cha&t",                IDM_FILE_DELETE_CHAT
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       IDM_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&API Key...",                 IDM_EDIT_API_KEY
+        MENUITEM "&Project Instructions...",    IDM_EDIT_INSTRUCTIONS
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Always on Top",              IDM_VIEW_ALWAYS_ON_TOP
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&Report an Issue",            IDM_HELP_ISSUE
+        MENUITEM "&Search Feature Requests",    IDM_HELP_FEATURE
+        MENUITEM SEPARATOR
+        MENUITEM "&About @APP_NAME@...",        IDM_HELP_ABOUT
+    END
+END
+
+/**
+ * Defines the dialog for configuring the user's API key.
+ */
+IDD_API_KEY_DIALOG  DIALOGEX 0, 0, 250, 75
+STYLE               DS_SETFONT | DS_SHELLFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT                9, "MS Shell Dlg 2"
+CAPTION             "Configure OpenAI API Key"
+BEGIN
+    LTEXT           "Enter your API Key",   IDC_STATIC_API_KEY,  0, 0, 0, 0
+    EDITTEXT                                IDC_EDIT_API_KEY,    0, 0, 0, 0, ES_MULTILINE | ES_AUTOVSCROLL
+    PUSHBUTTON      "Cancel",               IDCANCEL,            0, 0, 0, 0
+    DEFPUSHBUTTON   "OK",                   IDOK,                0, 0, 0, 0
+END
+
+/**
+ * Defines the dialog for configuring project instructions.
+ */
+IDD_INSTRUCTIONS_DIALOG DIALOGEX 0, 0, 250, 250
+STYLE                   DS_SETFONT | DS_SHELLFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT                    9, "MS Shell Dlg 2"
+CAPTION                 "Edit Project Instructions"
+BEGIN
+    LTEXT               "Set the tone or role for this project.",   IDC_STATIC_INSTRUCTIONS,    0, 0, 0, 0
+    EDITTEXT                                                        IDC_EDIT_INSTRUCTIONS,      0, 0, 0, 0, ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN
+    PUSHBUTTON          "Cancel",                                   IDCANCEL,                   0, 0, 0, 0
+    PUSHBUTTON          "OK",                                       IDOK,                       0, 0, 0, 0
+END
+
+/**
+ * Defines the application about dialog.
+ */
+IDD_ABOUT_DIALOG        DIALOGEX 0, 0, 175, 75
+STYLE                   DS_SETFONT | DS_SHELLFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT                    9, "MS Shell Dlg 2"
+CAPTION                 "About @APP_NAME@"
+BEGIN
+    ICON                IDI_ICON                                                                IDC_STATIC_ICON         0, 0, 0, 0
+    LTEXT               "@APP_NAME@\n@APP_DESCRIPTION@\n@APP_AUTHOR@\nVersion @APP_VERSION@",   IDC_STATIC_ABOUT,       0, 0, 0, 0
+    DEFPUSHBUTTON       "OK",                                                                   IDOK,                   0, 0, 0, 0
+END

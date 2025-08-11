@@ -1,0 +1,10 @@
+{
+  "[cpp]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  },
+  "C_Cpp.autoAddFileAssociations": false,
+  "C_Cpp.clang_format_style": "file",
+  "cmake.configureOnOpen": false,
+  "cmake.configureOnEdit": false,
+  "cmake.useCMakePresets": "always"
+}

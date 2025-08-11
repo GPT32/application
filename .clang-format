@@ -1,0 +1,20 @@
+AlignAfterOpenBracket: DontAlign
+AllowAllArgumentsOnNextLine: false
+AllowShortFunctionsOnASingleLine: Empty
+BasedOnStyle: Google
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeClosingParen: Always
+ColumnLimit: 120
+Cpp11BracedListStyle: false
+FixNamespaceComments: false
+IndentWidth: 4
+NamespaceIndentation: All
+
+# fixes an issue with clang-format ordering of headers conflicting
+# with the required include order between windows and COM controls
+IncludeCategories:
+  - Regex: '^<windows\.h>'
+    Priority: 0
+  - Regex: '^<commctrl\.h>'
+    Priority: 1
