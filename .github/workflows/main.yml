@@ -40,3 +40,15 @@ jobs:
           name: build
           path: build
       - run: gh release create ${{ inputs.version }} --latest --title ${{ inputs.version }} build/*
+  changelog:
+    needs: publish
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: npx conventional-changelog-cli -p conventionalcommits -o CHANGELOG.md -r 1
+      - run: echo "RELEASE_NAME=$(gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name')" >> $GITHUB_ENV
+      - run: gh release edit $RELEASE_NAME --notes-file CHANGELOG.md
