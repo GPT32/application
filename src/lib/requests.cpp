@@ -62,7 +62,8 @@ namespace lib::requests {
             return {};
         }
 
-        // initialize and connect to http session
+        // initialize http session and increase receive timeout
+        // to 5 minutes (30k ms) due to ai response times
         HINTERNET hSession = WinHttpOpen(L"api/1.0",
             WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
             WINHTTP_NO_PROXY_NAME,
@@ -73,6 +74,9 @@ namespace lib::requests {
             return {};
         }
 
+        WinHttpSetTimeouts(hSession, 0, 60000, 30000, 300000);
+
+        // connect to http session
         HINTERNET hConnect = WinHttpConnect(hSession, urlComp.lpszHostName, INTERNET_DEFAULT_HTTPS_PORT, 0);
 
         if (!hConnect) {
