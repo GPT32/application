@@ -2,7 +2,7 @@
 
 Minimal ChatGPT client for Windows built entirely with the Win32 API.
 
-![screenshot](https://raw.githubusercontent.com/GPT32/.github/refs/heads/main/assets/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/GPT32/.github/refs/heads/main/assets/demo.gif)
 
 ## Building
 
