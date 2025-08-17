@@ -80,6 +80,9 @@ BEGIN
         MENUITEM "&Report an Issue",            IDM_HELP_ISSUE
         MENUITEM "&Search Feature Requests",    IDM_HELP_FEATURE
         MENUITEM SEPARATOR
+        MENUITEM "View API &Usage",             IDM_HELP_API_USAGE
+        MENUITEM "View API &Logs",              IDM_HELP_API_LOGS
+        MENUITEM SEPARATOR
         MENUITEM "&About @APP_NAME@...",        IDM_HELP_ABOUT
     END
 END

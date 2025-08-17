@@ -138,6 +138,16 @@ LRESULT Controller::OnCommand(HWND hWnd, WPARAM wParam) {
             About::Instance().CreateDialogBox(hInstance, hWnd);
             break;
         }
+        case IDM_HELP_API_LOGS: {
+            std::string url = "https://platform.openai.com/logs?api=responses";
+            ShellExecute(hWnd, "open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+            break;
+        }
+        case IDM_HELP_API_USAGE: {
+            std::string url = "https://platform.openai.com/settings/organization/usage";
+            ShellExecute(hWnd, "open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+            break;
+        }
         case IDM_HELP_ISSUE: {
             std::string url = APP_REPO "/issues/new?template=bug_report.yml";
             ShellExecute(hWnd, "open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL);

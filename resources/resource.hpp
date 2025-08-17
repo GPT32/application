@@ -36,6 +36,8 @@
 #define IDM_HELP_ISSUE 4009
 #define IDM_HELP_FEATURE 4010
 #define IDM_HELP_ABOUT 4011
+#define IDM_HELP_API_USAGE 4012
+#define IDM_HELP_API_LOGS 4013
 
 /** @brief Main window dimensions */
 #define DIALOG_BUTTON_HEIGHT 24
