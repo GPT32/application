@@ -1,4 +1,4 @@
-[![Download](https://img.shields.io/github/downloads/gpt32/application/latest/gpt32.exe?sort=semver&style=for-the-badge&logo=mingww64&label=Windows)](https://github.com/gpt32/application/releases/latest/download/gpt32.exe)
+[![Download](https://img.shields.io/github/v/release/gpt32/application?sort=semver&style=for-the-badge&logo=github&label=Download%20Exe)](https://github.com/gpt32/application/releases/latest/download/gpt32.exe)
 
 Minimal ChatGPT client for Windows built entirely with the Win32 API.
 
