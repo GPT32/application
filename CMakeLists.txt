@@ -36,15 +36,15 @@ add_subdirectory(src/lib)
 
 # main application executable
 add_executable(${APP_ID}
-    src/controller.cpp
     src/main.cpp
-    src/views/view.cpp
+    src/controller.cpp
+    src/model.cpp
+    src/view.cpp
     src/views/api-key.cpp
     src/views/chat.cpp
     src/views/model-selector.cpp
     src/views/instructions.cpp
     src/views/about.cpp
-    src/model.cpp
     "${PROJECT_SOURCE_DIR}/resources/resource.rc"
     "${PROJECT_SOURCE_DIR}/resources/app.manifest"
 )

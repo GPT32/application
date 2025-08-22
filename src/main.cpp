@@ -5,7 +5,7 @@
 #include <resource.hpp>
 #include <shlobj.h>
 
-#include "views/view.hpp"
+#include "view.hpp"
 
 /**
  * @brief Main entry point for the Win32 application.
