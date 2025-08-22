@@ -14,6 +14,7 @@
 #define IDC_STATIC_ICON 1010
 #define IDC_STATIC_INSTRUCTIONS 1011
 #define IDC_STATIC_INTRO 1012
+#define IDC_STATUS_BAR 1013
 
 /** @brief Dialog windows. */
 #define IDD_ABOUT_DIALOG 2000

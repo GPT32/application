@@ -104,6 +104,20 @@ LRESULT View::CreateControls(HWND hWnd) {
         GetModuleHandle(nullptr),
         nullptr);
 
+    // create status bar
+    CreateWindowEx(0,
+        STATUSCLASSNAME,
+        nullptr,
+        WS_VISIBLE | WS_CHILD | SBARS_SIZEGRIP,
+        0,
+        0,
+        0,
+        0,
+        hWnd,
+        (HMENU)(INT_PTR)IDC_STATUS_BAR,
+        GetModuleHandle(nullptr),
+        nullptr);
+
     return 0;
 }
 
@@ -146,6 +160,10 @@ LRESULT View::LayoutControls(HWND hWnd, LPARAM lParam) {
     HWND hRichEdit = GetDlgItem(hWnd, IDC_RICHEDIT);
     HWND hStaticIntro = GetDlgItem(hWnd, IDC_STATIC_INTRO);
     HWND hTreeView = GetDlgItem(hWnd, IDC_TREEVIEW);
+    HWND hStatusBar = GetDlgItem(hWnd, IDC_STATUS_BAR);
+
+    RECT rcStatusBar = {};
+    GetClientRect(hStatusBar, &rcStatusBar);
 
     const int buttonHeight = MAIN_WINDOW_BUTTON_HEIGHT;
     const int comboboxHeight = MAIN_WINDOW_BUTTON_HEIGHT;
@@ -158,11 +176,12 @@ LRESULT View::LayoutControls(HWND hWnd, LPARAM lParam) {
     int rightPaneWidth = windowWidth - leftPaneWidth;
 
     int groupBoxHeight = 50;
+    int statusBarHeight = rcStatusBar.bottom - rcStatusBar.top;
     int richEditWidth = rightPaneWidth - SPACING;
-    int richEditHeight = windowHeight - inputHeight - buttonHeight - (PADDING * 2);
+    int richEditHeight = windowHeight - inputHeight - buttonHeight - statusBarHeight - (PADDING * 2);
     int staticIntroWidth = rightPaneWidth / 3;
     int treeViewWidth = leftPaneWidth - PADDING;
-    int treeViewHeight = windowHeight - groupBoxHeight - PADDING - SPACING;
+    int treeViewHeight = windowHeight - groupBoxHeight - statusBarHeight - PADDING - SPACING;
 
     SetWindowPos(hGroupboxModel, nullptr, SPACING, SPACING, treeViewWidth, groupBoxHeight, SWP_NOZORDER);
     SetWindowPos(hCombobox,
@@ -185,10 +204,27 @@ LRESULT View::LayoutControls(HWND hWnd, LPARAM lParam) {
     SetWindowPos(hButtonSend,
         nullptr,
         leftPaneWidth,
-        windowHeight - buttonHeight - SPACING,
+        windowHeight - buttonHeight - statusBarHeight - SPACING,
         richEditWidth,
         buttonHeight,
         SWP_NOZORDER);
+    SetWindowPos(hStatusBar, nullptr, 0, 0, windowWidth, 0, SWP_NOZORDER | SWP_NOMOVE);
+
+    // layout the status bar parts
+    int statusBarPartsNum = 2;
+    int statusBarPartWidth = windowWidth / statusBarPartsNum;
+    int statusBarRightEdge = statusBarPartWidth;
+    std::vector<int> statusBarParts(statusBarPartsNum);
+
+    for (int i = 0; i < statusBarPartsNum; i++) {
+        statusBarParts[i] = statusBarRightEdge;
+        statusBarRightEdge += statusBarPartWidth;
+    }
+
+    SendMessage(hStatusBar,
+        SB_SETPARTS,
+        static_cast<WPARAM>(statusBarPartsNum),
+        reinterpret_cast<LPARAM>(statusBarParts.data()));
 
     return 0;
 }
