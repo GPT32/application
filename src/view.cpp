@@ -1,9 +1,10 @@
 #include "view.hpp"
 
-#include "chat.hpp"
 #include "controller.hpp"
-#include "model-selector.hpp"
 #include "resource.hpp"
+#include "views/chat.hpp"
+#include "views/model-selector.hpp"
+#include "views/status-bar.hpp"
 
 View& View::Instance() {
     static View instance;
@@ -105,18 +106,7 @@ LRESULT View::CreateControls(HWND hWnd) {
         nullptr);
 
     // create status bar
-    CreateWindowEx(0,
-        STATUSCLASSNAME,
-        nullptr,
-        WS_VISIBLE | WS_CHILD | SBARS_SIZEGRIP,
-        0,
-        0,
-        0,
-        0,
-        hWnd,
-        (HMENU)(INT_PTR)IDC_STATUS_BAR,
-        GetModuleHandle(nullptr),
-        nullptr);
+    StatusBar::Instance().CreateControl(hWnd);
 
     return 0;
 }
@@ -210,21 +200,8 @@ LRESULT View::LayoutControls(HWND hWnd, LPARAM lParam) {
         SWP_NOZORDER);
     SetWindowPos(hStatusBar, nullptr, 0, 0, windowWidth, 0, SWP_NOZORDER | SWP_NOMOVE);
 
-    // layout the status bar parts
-    int statusBarPartsNum = 2;
-    int statusBarPartWidth = windowWidth / statusBarPartsNum;
-    int statusBarRightEdge = statusBarPartWidth;
-    std::vector<int> statusBarParts(statusBarPartsNum);
-
-    for (int i = 0; i < statusBarPartsNum; i++) {
-        statusBarParts[i] = statusBarRightEdge;
-        statusBarRightEdge += statusBarPartWidth;
-    }
-
-    SendMessage(hStatusBar,
-        SB_SETPARTS,
-        static_cast<WPARAM>(statusBarPartsNum),
-        reinterpret_cast<LPARAM>(statusBarParts.data()));
+    // reconfigure the status bar parts with the new size constraints
+    StatusBar::Instance().ConfigureParts(hWnd);
 
     return 0;
 }

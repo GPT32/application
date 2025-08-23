@@ -16,7 +16,7 @@ namespace lib::api {
         const std::string instructions) {
         // build url and input data
         auto headers = lib::api::authenticate(apiKey);
-        std::wstring url = BASE_URL + L"/responses";
+        std::wstring url = lib::api::BASE_URL + L"/responses";
         nlohmann::json data = { { "model", model }, { "input", input } };
 
         // append previous response id
@@ -34,7 +34,7 @@ namespace lib::api {
 
     lib::requests::Response listModels(const std::string& apiKey) {
         auto headers = lib::api::authenticate(apiKey);
-        std::wstring url = BASE_URL + L"/models";
+        std::wstring url = lib::api::BASE_URL + L"/models";
         return lib::requests::get(url.c_str(), headers);
     }
 
@@ -43,5 +43,12 @@ namespace lib::api {
         std::wstring wstr(size - 1, 0);
         MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, wstr.data(), size);
         return wstr;
+    }
+
+    lib::requests::Response usageCompletions(const std::string& adminApiKey) {
+        auto headers = lib::api::authenticate(adminApiKey);
+        std::wstring url =
+            lib::api::BASE_URL + L"/organization/usage/completions?start_time=1755896042&bucket_width=1d";
+        return lib::requests::get(url.c_str(), headers);
     }
 }

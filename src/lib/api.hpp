@@ -48,4 +48,11 @@ namespace lib::api {
      * @return std::wstring The converted string.
      */
     std::wstring toWideString(const std::string& str);
+
+    /**
+     * @brief Get completions usage details.
+     * @param adminApiKey The OpenAI Admin API key.
+     * @return Response The response object.
+     */
+    lib::requests::Response usageCompletions(const std::string& adminApiKey);
 }

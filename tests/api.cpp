@@ -18,27 +18,39 @@ void log(lib::requests::Response response) {
 }
 
 /**
- * @brief Test suite entrypoint.
+ * @brief Create prompt test.
  * @return int Exit code (0 if assertion passes)
  */
-int main() {
+int testCreatePrompt() {
     // bail early if no api key is found
     const char* apiKey = std::getenv("API_KEY");
 
     if (!apiKey) {
-        return 1;
+        return 0;
     }
 
-    // create prompt
     auto input = "Hello from GPT32, a desktop application built with the Win32 API.";
-    auto r1 = lib::api::createResponse(apiKey, input, "gpt-4.1", "", "");
-    log(r1);
+    auto r = lib::api::createResponse(apiKey, input, "gpt-4.1", "", "");
+    log(r);
+    return 0;
+}
 
-    // list models
-    auto r2 = lib::api::listModels(apiKey);
-    log(r2);
+/**
+ * @brief Tests list models.
+ * @return int Exit code (0 if assertion passes)
+ */
+int testListModels() {
+    // bail early if no api key is found
+    const char* apiKey = std::getenv("API_KEY");
 
-    for (auto& [key, val] : r2.body["data"].items()) {
+    if (!apiKey) {
+        return 0;
+    }
+
+    auto r = lib::api::listModels(apiKey);
+    log(r);
+
+    for (auto& [key, val] : r.body["data"].items()) {
         if (val["owned_by"] != "openai") {
             continue;
         }
@@ -46,5 +58,33 @@ int main() {
         std::cout << val["id"] << std::endl;
     }
 
+    return 0;
+}
+
+/**
+ * @brief Tests usage endpoint.
+ * @return int Exit code (0 if assertion passes)
+ */
+int testUsage() {
+    // bail early if no admin api key is found
+    const char* adminApiKey = std::getenv("ADMIN_API_KEY");
+
+    if (!adminApiKey) {
+        return 0;
+    }
+
+    auto r = lib::api::usageCompletions(adminApiKey);
+    log(r);
+    return 0;
+}
+
+/**
+ * @brief Test suite entrypoint.
+ * @return int Exit code (0 if assertion passes)
+ */
+int main() {
+    assert(testCreatePrompt() == 0);
+    assert(testListModels() == 0);
+    assert(testUsage() == 0);
     return 1;
 }

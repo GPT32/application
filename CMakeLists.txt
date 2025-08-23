@@ -45,6 +45,7 @@ add_executable(${APP_ID}
     src/views/model-selector.cpp
     src/views/instructions.cpp
     src/views/about.cpp
+    src/views/status-bar.cpp
     "${PROJECT_SOURCE_DIR}/resources/resource.rc"
     "${PROJECT_SOURCE_DIR}/resources/app.manifest"
 )

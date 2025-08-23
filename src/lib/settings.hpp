@@ -64,6 +64,27 @@ namespace lib::settings::apiKey {
 }
 
 /**
+ * @namespace lib::settings::adminApiKey
+ * @brief Loads and saves the admin api key to settings.
+ */
+namespace lib::settings::adminApiKey {
+    /** @brief Admin API key registry sub key. */
+    inline const char* const Key = "AdminApiKey";
+
+    /**
+     * @brief Loads the setting from the registry.
+     * @param adminApiKey Reference to where the setting will be stored.
+     */
+    bool load(std::string& adminApiKey);
+
+    /**
+     * @brief Saves the setting to the registry.
+     * @param adminApiKey The setting to save.
+     */
+    bool save(std::string& adminApiKey);
+}
+
+/**
  * @namespace lib::settings::alwaysOnTop
  * @brief Loads and saves always on top settings.
  */

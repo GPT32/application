@@ -104,6 +104,15 @@ namespace lib::settings::apiKey {
     }
 }
 
+namespace lib::settings::adminApiKey {
+    bool load(std::string& adminApiKey) {
+        return lib::settings::load(Key, adminApiKey);
+    }
+    bool save(std::string& adminApiKey) {
+        return lib::settings::save(Key, adminApiKey);
+    }
+}
+
 namespace lib::settings::alwaysOnTop {
     bool load(bool& alwaysOnTop) {
         DWORD value = 0;
