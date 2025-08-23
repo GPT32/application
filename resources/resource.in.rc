@@ -90,13 +90,13 @@ END
 /**
  * Defines the dialog for configuring the user's API key.
  */
-IDD_API_KEY_DIALOG  DIALOGEX 0, 0, 250, 75
+IDD_API_KEY_DIALOG  DIALOGEX 0, 0, 250, 50
 STYLE               DS_SETFONT | DS_SHELLFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT                9, "MS Shell Dlg 2"
 CAPTION             "Configure OpenAI API Key"
 BEGIN
     LTEXT           "Enter your API Key",   IDC_STATIC_API_KEY,  0, 0, 0, 0
-    EDITTEXT                                IDC_EDIT_API_KEY,    0, 0, 0, 0, ES_MULTILINE | ES_AUTOVSCROLL
+    EDITTEXT                                IDC_EDIT_API_KEY,    0, 0, 0, 0, ES_AUTOHSCROLL
     PUSHBUTTON      "Cancel",               IDCANCEL,            0, 0, 0, 0
     DEFPUSHBUTTON   "OK",                   IDOK,                0, 0, 0, 0
 END

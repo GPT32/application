@@ -71,14 +71,14 @@ LRESULT ApiKey::LayoutControls(HWND hDlg) {
 
     const int textHeight = DIALOG_BUTTON_HEIGHT;
     const int buttonHeight = DIALOG_BUTTON_HEIGHT;
+    const int editHeight = MAIN_WINDOW_STATIC_HEIGHT;
 
     int dlgWidth = rcDlg.right - rcDlg.left;
     int dlgHeight = rcDlg.bottom - rcDlg.top;
     int buttonWidth = dlgWidth / 3;
-    int editHeight = dlgHeight - PADDING - buttonHeight - textHeight;
 
     SetWindowPos(hText, nullptr, SPACING, SPACING, dlgWidth - PADDING, textHeight, SWP_NOZORDER);
-    SetWindowPos(hEdit, nullptr, SPACING, textHeight, dlgWidth - PADDING, editHeight, SWP_NOZORDER);
+    SetWindowPos(hEdit, nullptr, SPACING, textHeight + SPACING, dlgWidth - PADDING, editHeight, SWP_NOZORDER);
     SetWindowPos(hButtonCancel,
         nullptr,
         dlgWidth - (buttonWidth * 2 - SPACING),
