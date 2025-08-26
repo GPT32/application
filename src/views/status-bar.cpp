@@ -71,36 +71,12 @@ HWND StatusBar::CreateControl(HWND hWnd) {
     return hStatusBar;
 }
 
-void StatusBar::Load(HWND hWnd) {
-    // bail early if no api key configured
-    std::string adminApiKey;
-    lib::settings::load(lib::settings::adminApiKey::Key, adminApiKey);
-
-    if (adminApiKey.empty()) {
-        return;
-    }
-
-    // get the timestamp for the start of the current month
-    auto now = std::chrono::system_clock::now();
-    auto today = std::chrono::year_month_day(std::chrono::floor<std::chrono::days>(now));
-    auto month = today.year() / today.month() / std::chrono::day(1);
-
-    auto monthTimepoint = std::chrono::system_clock::time_point(std::chrono::sys_days(month));
-    auto monthTimestamp = std::chrono::duration_cast<std::chrono::seconds>(monthTimepoint.time_since_epoch()).count();
-
-    // monthly usage
-    std::jthread([adminApiKey, hWnd, monthTimestamp]() {
-        auto r = lib::api::usage(adminApiKey, monthTimestamp);
-        auto* body = new std::string(r.body.dump());
-        PostMessage(hWnd, WM_USER_ADMIN_API_RESPONSE, MAKEWPARAM(0, 0), reinterpret_cast<LPARAM>(body));
-    }).detach();
-
-    // load monthly cost
-    std::jthread([adminApiKey, hWnd, monthTimestamp]() {
-        auto r = lib::api::cost(adminApiKey, monthTimestamp);
-        auto* body = new std::string(r.body.dump());
-        PostMessage(hWnd, WM_USER_ADMIN_API_RESPONSE, MAKEWPARAM(1, 0), reinterpret_cast<LPARAM>(body));
-    }).detach();
+std::string StatusBar::FormatCurrency(const long long number) {
+    // currency formatting requires a string stream
+    std::ostringstream currency;
+    currency.imbue(StatusBar::locale);
+    currency << std::showbase << std::put_money(std::to_string(number));
+    return currency.str();
 }
 
 std::string StatusBar::FormatNumber(uint64_t number) {
@@ -136,6 +112,38 @@ std::string StatusBar::FormatNumber(uint64_t number) {
 
     result += suffixes[suffixIdx];
     return result;
+}
+
+void StatusBar::Load(HWND hWnd) {
+    // bail early if no api key configured
+    std::string adminApiKey;
+    lib::settings::load(lib::settings::adminApiKey::Key, adminApiKey);
+
+    if (adminApiKey.empty()) {
+        return;
+    }
+
+    // get the timestamp for the start of the current month
+    auto now = std::chrono::system_clock::now();
+    auto today = std::chrono::year_month_day(std::chrono::floor<std::chrono::days>(now));
+    auto month = today.year() / today.month() / std::chrono::day(1);
+
+    auto monthTimepoint = std::chrono::system_clock::time_point(std::chrono::sys_days(month));
+    auto monthTimestamp = std::chrono::duration_cast<std::chrono::seconds>(monthTimepoint.time_since_epoch()).count();
+
+    // monthly usage
+    std::jthread([adminApiKey, hWnd, monthTimestamp]() {
+        auto r = lib::api::usage(adminApiKey, monthTimestamp);
+        auto* body = new std::string(r.body.dump());
+        PostMessage(hWnd, WM_USER_ADMIN_API_RESPONSE, MAKEWPARAM(0, 0), reinterpret_cast<LPARAM>(body));
+    }).detach();
+
+    // load monthly cost
+    std::jthread([adminApiKey, hWnd, monthTimestamp]() {
+        auto r = lib::api::cost(adminApiKey, monthTimestamp);
+        auto* body = new std::string(r.body.dump());
+        PostMessage(hWnd, WM_USER_ADMIN_API_RESPONSE, MAKEWPARAM(1, 0), reinterpret_cast<LPARAM>(body));
+    }).detach();
 }
 
 LRESULT StatusBar::OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
@@ -195,12 +203,7 @@ LRESULT StatusBar::OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
                 }
             }
 
-            // currency formatting requires a string stream
-            // and the value to convert to be in cents
-            std::ostringstream currency;
-            currency.imbue(StatusBar::locale);
-            currency << std::showbase << std::put_money(std::to_string(cost));
-            parts[partIdx][0].second = currency.str();
+            parts[partIdx][0].second = StatusBar::FormatCurrency(cost);
             break;
         }
     }

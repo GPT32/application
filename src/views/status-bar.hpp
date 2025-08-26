@@ -60,10 +60,11 @@ class StatusBar {
     StatusBar() = default;
 
     /**
-     * @brief Loads the async data from the backend.
-     * @param hWnd Handle to the main window.
+     * @brief Formats number of cents to currency.
+     * @param number The number to format.
+     * @return string The formatted number.
      */
-    void Load(HWND hWnd);
+    std::string FormatCurrency(const long long number);
 
     /**
      * @brief Formats a large number into human-readable string with suffixes.
@@ -71,6 +72,12 @@ class StatusBar {
      * @return string The formatted number.
      */
     std::string FormatNumber(uint64_t number);
+
+    /**
+     * @brief Loads the async data from the backend.
+     * @param hWnd Handle to the main window.
+     */
+    void Load(HWND hWnd);
 
     /**
      * @brief Renders the status bar parts text.

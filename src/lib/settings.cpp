@@ -30,7 +30,7 @@ namespace lib::settings {
         }
 
         DWORD size = sizeof(DWORD);
-        DWORD type = 0;
+        DWORD type = REG_DWORD;
 
         if (RegQueryValueEx(hKey, subKey.c_str(), nullptr, &type, reinterpret_cast<BYTE*>(&output), &size) !=
             ERROR_SUCCESS) {
@@ -42,7 +42,7 @@ namespace lib::settings {
         return true;
     }
 
-    bool save(const std::string subKey, const std::string& value) {
+    bool save(const std::string subKey, const std::string& input) {
         HKEY hKey;
 
         if (RegCreateKeyEx(HKEY_CURRENT_USER,
@@ -61,8 +61,8 @@ namespace lib::settings {
                 subKey.c_str(),
                 0,
                 REG_SZ,
-                reinterpret_cast<const BYTE*>(value.c_str()),
-                static_cast<DWORD>(value.size() + 1)) != ERROR_SUCCESS) {
+                reinterpret_cast<const BYTE*>(input.c_str()),
+                static_cast<DWORD>(input.size() + 1)) != ERROR_SUCCESS) {
             return false;
         }
 
@@ -70,7 +70,7 @@ namespace lib::settings {
         return true;
     }
 
-    bool save(const std::string& subKey, DWORD value) {
+    bool save(const std::string& subKey, DWORD input) {
         HKEY hKey;
 
         if (RegCreateKeyEx(HKEY_CURRENT_USER,
@@ -85,7 +85,7 @@ namespace lib::settings {
             return false;
         }
 
-        if (RegSetValueEx(hKey, subKey.c_str(), 0, REG_DWORD, reinterpret_cast<const BYTE*>(&value), sizeof(DWORD)) !=
+        if (RegSetValueEx(hKey, subKey.c_str(), 0, REG_DWORD, reinterpret_cast<const BYTE*>(&input), sizeof(DWORD)) !=
             ERROR_SUCCESS) {
             return false;
         }
@@ -96,46 +96,46 @@ namespace lib::settings {
 }
 
 namespace lib::settings::apiKey {
-    bool load(std::string& apiKey) {
-        return lib::settings::load(Key, apiKey);
+    bool load(std::string& output) {
+        return lib::settings::load(Key, output);
     }
-    bool save(std::string& apiKey) {
-        return lib::settings::save(Key, apiKey);
+    bool save(std::string& input) {
+        return lib::settings::save(Key, input);
     }
 }
 
 namespace lib::settings::adminApiKey {
-    bool load(std::string& adminApiKey) {
-        return lib::settings::load(Key, adminApiKey);
+    bool load(std::string& output) {
+        return lib::settings::load(Key, output);
     }
-    bool save(std::string& adminApiKey) {
-        return lib::settings::save(Key, adminApiKey);
+    bool save(std::string& input) {
+        return lib::settings::save(Key, input);
     }
 }
 
 namespace lib::settings::alwaysOnTop {
-    bool load(bool& alwaysOnTop) {
+    bool load(bool& output) {
         DWORD value = 0;
 
         if (!lib::settings::load(Key, value)) {
-            alwaysOnTop = false;
+            output = false;
             return false;
         }
 
-        alwaysOnTop = (value != 0);
+        output = (value != 0);
         return true;
     }
 
-    bool save(bool alwaysOnTop) {
-        return lib::settings::save(Key, alwaysOnTop);
+    bool save(bool input) {
+        return lib::settings::save(Key, input);
     }
 }
 
 namespace lib::settings::model {
-    bool load(std::string& model) {
-        return lib::settings::load(Key, model);
+    bool load(std::string& output) {
+        return lib::settings::load(Key, output);
     }
-    bool save(std::string& model) {
-        return lib::settings::save(Key, model);
+    bool save(std::string& input) {
+        return lib::settings::save(Key, input);
     }
 }

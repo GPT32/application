@@ -14,32 +14,32 @@ namespace lib::settings {
     inline const std::string RegistryPath = std::string("Software\\") + APP_NAME;
 
     /**
-     * @brief Loads a string setting from the registry.
+     * @brief Loads a string from the registry.
      * @param subKey The registry sub key.
-     * @param output The output string.
+     * @param output The output value.
      */
     bool load(const std::string subKey, std::string& output);
 
     /**
-     * @brief Loads a boolean from the registry.
+     * @brief Loads a 32-bit unsigned int from the registry.
      * @param subKey The registry sub key.
-     * @param output The output boolean.
+     * @param output The output value.
      */
     bool load(const std::string subKey, DWORD& output);
 
     /**
-     * @brief Saves a string setting to the registry.
+     * @brief Saves a string to the registry.
      * @param subKey    The registry sub key.
-     * @param value     The content to save.
+     * @param input     The input value.
      */
-    bool save(const std::string subKey, const std::string& value);
+    bool save(const std::string subKey, const std::string& input);
 
     /**
-     * @brief Saves a boolean setting to the registry.
+     * @brief Saves a 32-bit unsigned int to the registry.
      * @param subKey    The registry sub key.
-     * @param value     The content to save.
+     * @param input     The input value.
      */
-    bool save(const std::string& subKey, DWORD value);
+    bool save(const std::string& subKey, DWORD input);
 }
 
 /**
@@ -52,15 +52,15 @@ namespace lib::settings::apiKey {
 
     /**
      * @brief Loads the setting from the registry.
-     * @param apiKey Reference to where the setting will be stored.
+     * @param output Reference to where the setting will be stored.
      */
-    bool load(std::string& apiKey);
+    bool load(std::string& output);
 
     /**
      * @brief Saves the setting to the registry.
-     * @param apiKey The setting to save.
+     * @param input The setting to save.
      */
-    bool save(std::string& apiKey);
+    bool save(std::string& input);
 }
 
 /**
@@ -73,15 +73,15 @@ namespace lib::settings::adminApiKey {
 
     /**
      * @brief Loads the setting from the registry.
-     * @param adminApiKey Reference to where the setting will be stored.
+     * @param output Reference to where the setting will be stored.
      */
-    bool load(std::string& adminApiKey);
+    bool load(std::string& output);
 
     /**
      * @brief Saves the setting to the registry.
-     * @param adminApiKey The setting to save.
+     * @param input The setting to save.
      */
-    bool save(std::string& adminApiKey);
+    bool save(std::string& input);
 }
 
 /**
@@ -94,15 +94,15 @@ namespace lib::settings::alwaysOnTop {
 
     /**
      * @brief Loads the setting from the registry.
-     * @param alwaysOnTop Reference to where the setting will be stored.
+     * @param output Reference to where the setting will be stored.
      */
-    bool load(bool& alwaysOnTop);
+    bool load(bool& output);
 
     /**
      * @brief Saves the setting to the registry.
-     * @param alwaysOnTop The setting to save.
+     * @param input The setting to save.
      */
-    bool save(bool alwaysOnTop);
+    bool save(bool input);
 }
 
 /**
@@ -115,13 +115,13 @@ namespace lib::settings::model {
 
     /**
      * @brief Loads setting from the registry.
-     * @param model Reference to where the setting will be stored.
+     * @param output Reference to where the setting will be stored.
      */
-    bool load(std::string& model);
+    bool load(std::string& output);
 
     /**
      * @brief Saves setting to the registry.
-     * @param model The setting to save.
+     * @param input The setting to save.
      */
-    bool save(std::string& model);
+    bool save(std::string& input);
 }
