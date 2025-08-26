@@ -18,21 +18,21 @@ namespace lib::settings {
      * @param subKey The registry sub key.
      * @param output The output value.
      */
-    bool load(const std::string subKey, std::string& output);
+    bool load(const std::string& subKey, std::string& output);
 
     /**
      * @brief Loads a 32-bit unsigned int from the registry.
      * @param subKey The registry sub key.
      * @param output The output value.
      */
-    bool load(const std::string subKey, DWORD& output);
+    bool load(const std::string& subKey, DWORD& output);
 
     /**
      * @brief Saves a string to the registry.
      * @param subKey    The registry sub key.
      * @param input     The input value.
      */
-    bool save(const std::string subKey, const std::string& input);
+    bool save(const std::string& subKey, const std::string& input);
 
     /**
      * @brief Saves a 32-bit unsigned int to the registry.

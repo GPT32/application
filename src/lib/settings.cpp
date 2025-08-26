@@ -1,7 +1,7 @@
 #include "settings.hpp"
 
 namespace lib::settings {
-    bool load(const std::string subKey, std::string& output) {
+    bool load(const std::string& subKey, std::string& output) {
         HKEY hKey;
 
         if (RegOpenKeyEx(HKEY_CURRENT_USER, RegistryPath.c_str(), 0, KEY_READ, &hKey) != ERROR_SUCCESS) {
@@ -22,7 +22,7 @@ namespace lib::settings {
         return true;
     }
 
-    bool load(const std::string subKey, DWORD& output) {
+    bool load(const std::string& subKey, DWORD& output) {
         HKEY hKey;
 
         if (RegOpenKeyEx(HKEY_CURRENT_USER, RegistryPath.c_str(), 0, KEY_READ, &hKey) != ERROR_SUCCESS) {
@@ -42,7 +42,7 @@ namespace lib::settings {
         return true;
     }
 
-    bool save(const std::string subKey, const std::string& input) {
+    bool save(const std::string& subKey, const std::string& input) {
         HKEY hKey;
 
         if (RegCreateKeyEx(HKEY_CURRENT_USER,
