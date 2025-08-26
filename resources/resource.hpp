@@ -50,5 +50,6 @@
 #define PADDING (SPACING * 2)
 
 /** @brief User messages. */
-#define WM_USER_API_RESPONSE (WM_USER + 1)
-#define WM_USER_SCROLL_TO_BOTTOM (WM_USER + 2)
+#define WM_USER_ADMIN_API_RESPONSE (WM_USER + 1)
+#define WM_USER_API_RESPONSE (WM_USER + 2)
+#define WM_USER_SCROLL_TO_BOTTOM (WM_USER + 3)

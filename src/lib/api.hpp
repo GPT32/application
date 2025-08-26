@@ -21,6 +21,14 @@ namespace lib::api {
     lib::requests::Headers authenticate(const std::string& apiKey);
 
     /**
+     * @brief Gets cost details.
+     * @param adminApiKey   The OpenAI Admin API key.
+     * @param startTime     Start time in unix seconds.
+     * @return Response The response object.
+     */
+    lib::requests::Response cost(const std::string& adminApiKey, const time_t startTime);
+
+    /**
      * @brief Creates a model response.
      * @param apiKey        The OpenAI API key.
      * @param input         The model input.
@@ -43,6 +51,14 @@ namespace lib::api {
     lib::requests::Response listModels(const std::string& apiKey);
 
     /**
+     * @brief Aggregates paginated endpoint data into a single vector.
+     * @param adminApiKey   The OpenAI Admin API key.
+     * @param baseUrl       The base URL.
+     * @return Response The response object.
+     */
+    lib::requests::Response paginate(const std::string& adminApiKey, const std::wstring& baseUrl);
+
+    /**
      * @brief Converts a string to wide string.
      * @param str The string to convert.
      * @return std::wstring The converted string.
@@ -51,8 +67,9 @@ namespace lib::api {
 
     /**
      * @brief Get completions usage details.
-     * @param adminApiKey The OpenAI Admin API key.
+     * @param adminApiKey   The OpenAI Admin API key.
+     * @param startTime     Start time in unix seconds.
      * @return Response The response object.
      */
-    lib::requests::Response usageCompletions(const std::string& adminApiKey);
+    lib::requests::Response usage(const std::string& adminApiKey, const time_t startTime);
 }

@@ -2,10 +2,14 @@
 
 #include <CommCtrl.h>
 
+#include <chrono>
+#include <cmath>
+#include <format>
 #include <ranges>
 #include <sstream>
 #include <thread>
 
+#include "lib/api.hpp"
 #include "lib/settings.hpp"
 #include "resource.hpp"
 
@@ -61,34 +65,167 @@ HWND StatusBar::CreateControl(HWND hWnd) {
     // indices ready to attach their data to
     StatusBar::ConfigureParts(hWnd);
 
-    // send non-blocking api request to load the stats data
+    // load the async data and initial render
+    StatusBar::Load(hWnd);
+    StatusBar::RenderText(hWnd);
+    return hStatusBar;
+}
+
+void StatusBar::Load(HWND hWnd) {
+    // bail early if no api key configured
     std::string adminApiKey;
     lib::settings::load(lib::settings::adminApiKey::Key, adminApiKey);
 
-    std::jthread([=]() {
-        // @todo
+    if (adminApiKey.empty()) {
+        return;
+    }
+
+    // get the timestamp for the start of the current month
+    auto now = std::chrono::system_clock::now();
+    auto today = std::chrono::year_month_day(std::chrono::floor<std::chrono::days>(now));
+    auto month = today.year() / today.month() / std::chrono::day(1);
+
+    auto monthTimepoint = std::chrono::system_clock::time_point(std::chrono::sys_days(month));
+    auto monthTimestamp = std::chrono::duration_cast<std::chrono::seconds>(monthTimepoint.time_since_epoch()).count();
+
+    // monthly usage
+    std::jthread([adminApiKey, hWnd, monthTimestamp]() {
+        auto r = lib::api::usage(adminApiKey, monthTimestamp);
+        auto* body = new std::string(r.body.dump());
+        PostMessage(hWnd, WM_USER_ADMIN_API_RESPONSE, MAKEWPARAM(0, 0), reinterpret_cast<LPARAM>(body));
     }).detach();
 
-    // @todo: move this to `Controller::onCreate`
+    // load monthly cost
+    std::jthread([adminApiKey, hWnd, monthTimestamp]() {
+        auto r = lib::api::cost(adminApiKey, monthTimestamp);
+        auto* body = new std::string(r.body.dump());
+        PostMessage(hWnd, WM_USER_ADMIN_API_RESPONSE, MAKEWPARAM(1, 0), reinterpret_cast<LPARAM>(body));
+    }).detach();
+}
+
+std::string StatusBar::FormatNumber(uint64_t number) {
+    static constexpr const char* suffixes[] = { "", "K", "M", "B", "T" };
+    static constexpr int numSuffixes = sizeof(suffixes) / sizeof(suffixes[0]);
+
+    double value = static_cast<double>(number);
+    int suffixIdx = 0;
+
+    // reduce the value by 1000 until we reach
+    // `< 1000` or run out of suffixes
+    while (value >= 1000.0 && suffixIdx < numSuffixes - 1) {
+        value /= 1000.0;
+        ++suffixIdx;
+    }
+
+    // determine if we're a whole number or nearly zero (1e-6) and ignore
+    // decimals; otherwise we only care about up to 2 decimal places
+    std::string result;
+
+    if (std::fmod(value, 1.0) < 1e-6) {
+        result = std::format("{}", static_cast<uint64_t>(value));
+    } else {
+        result = std::format("{:.2f}", value);
+
+        // remove trailing zeroes and decimal points
+        result.erase(result.find_last_not_of('0') + 1);
+
+        if (result.back() == '.') {
+            result.pop_back();
+        }
+    }
+
+    result += suffixes[suffixIdx];
+    return result;
+}
+
+LRESULT StatusBar::OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    auto* r = reinterpret_cast<std::string*>(lParam);
+
+    if (!r) {
+        return 0;
+    }
+
+    // extract json from response
+    auto json = nlohmann::json::parse(*r);
+
+    if (!json.is_array()) {
+        delete r;
+        return 0;
+    }
+
+    // extract the usage and cost data
+    //
+    // lower 16 bits = type (usage, cost)
+    // upper 16 bits = status bar part index
+    int partIdx = HIWORD(wParam);
+
+    switch (LOWORD(wParam)) {
+        case 0: {
+            int inputTokens = 0;
+            int outputTokens = 0;
+            for (auto& bucket : json) {
+                if (!bucket.contains("results") || !bucket["results"].is_array()) {
+                    continue;
+                }
+
+                for (auto& bucketItem : bucket["results"]) {
+                    inputTokens += bucketItem["input_tokens"];
+                    outputTokens += bucketItem["output_tokens"];
+                }
+            }
+
+            parts[partIdx][1].second = StatusBar::FormatNumber(inputTokens);
+            parts[partIdx][2].second = StatusBar::FormatNumber(outputTokens);
+
+            break;
+        }
+        case 1: {
+            long long cost = 0;
+
+            for (auto& bucket : json) {
+                if (!bucket.contains("results") || !bucket["results"].is_array()) {
+                    continue;
+                }
+
+                for (auto& bucketItem : bucket["results"]) {
+                    // convert explicitly to double from json to preserve
+                    // precision and convert from cents to dollar
+                    auto cents = bucketItem["amount"]["value"].get<double>();
+                    cost += static_cast<long long>(cents * 100);
+                }
+            }
+
+            // currency formatting requires a string stream
+            // and the value to convert to be in cents
+            std::ostringstream currency;
+            currency.imbue(StatusBar::locale);
+            currency << std::showbase << std::put_money(std::to_string(cost));
+            parts[partIdx][0].second = currency.str();
+            break;
+        }
+    }
+
+    // update the status bar part data and clean up
     StatusBar::RenderText(hWnd);
-    return hStatusBar;
+
+    delete r;
+    return 0;
 }
 
 void StatusBar::RenderText(HWND hWnd) {
     HWND hStatusBar = GetDlgItem(hWnd, IDC_STATUS_BAR);
 
     for (auto const& [partIdx, part] : StatusBar::parts | std::views::enumerate) {
-        std::ostringstream oss;
+        std::string text;
 
         for (auto const& [fieldIdx, field] : part | std::views::enumerate) {
-            oss << field.first << ": " << field.second;
+            text += std::format("{}: {}", field.first, field.second);
 
             if (size_t(fieldIdx) < part.size() - 1) {
-                oss << ", ";
+                text += ", ";
             }
         }
 
-        std::string text = oss.str();
         SendMessage(hStatusBar, SB_SETTEXT, partIdx, reinterpret_cast<LPARAM>(text.c_str()));
     }
 }

@@ -13,6 +13,7 @@
 #include "views/chat.hpp"
 #include "views/instructions.hpp"
 #include "views/model-selector.hpp"
+#include "views/status-bar.hpp"
 
 Controller& Controller::Instance() {
     static Controller instance;
@@ -404,6 +405,8 @@ LRESULT Controller::OnNotify(HWND hWnd, LPARAM lParam) {
 
 LRESULT Controller::OnUserMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
+        case WM_USER_ADMIN_API_RESPONSE:
+            return StatusBar::Instance().OnAdminApiResponse(hWnd, wParam, lParam);
         case WM_USER_API_RESPONSE:
             return Chat::Instance().OnApiResponse(hWnd, wParam, lParam);
         default:
