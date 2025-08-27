@@ -42,6 +42,26 @@ namespace lib::registry {
         return true;
     }
 
+    bool read(const std::string& subKey, DWORD64& output) {
+        HKEY hKey;
+
+        if (RegOpenKeyEx(HKEY_CURRENT_USER, RegistryPath.c_str(), 0, KEY_READ, &hKey) != ERROR_SUCCESS) {
+            return false;
+        }
+
+        DWORD size = sizeof(DWORD64);
+        DWORD type = REG_QWORD;
+
+        if (RegQueryValueEx(hKey, subKey.c_str(), nullptr, &type, reinterpret_cast<BYTE*>(&output), &size) !=
+            ERROR_SUCCESS) {
+            RegCloseKey(hKey);
+            return false;
+        }
+
+        RegCloseKey(hKey);
+        return true;
+    }
+
     bool write(const std::string& subKey, const std::string& input) {
         HKEY hKey;
 
@@ -86,6 +106,30 @@ namespace lib::registry {
         }
 
         if (RegSetValueEx(hKey, subKey.c_str(), 0, REG_DWORD, reinterpret_cast<const BYTE*>(&input), sizeof(DWORD)) !=
+            ERROR_SUCCESS) {
+            return false;
+        }
+
+        RegCloseKey(hKey);
+        return true;
+    }
+
+    bool write(const std::string& subKey, DWORD64 input) {
+        HKEY hKey;
+
+        if (RegCreateKeyEx(HKEY_CURRENT_USER,
+                RegistryPath.c_str(),
+                0,
+                nullptr,
+                0,
+                KEY_WRITE,
+                nullptr,
+                &hKey,
+                nullptr) != ERROR_SUCCESS) {
+            return false;
+        }
+
+        if (RegSetValueEx(hKey, subKey.c_str(), 0, REG_QWORD, reinterpret_cast<const BYTE*>(&input), sizeof(DWORD64)) !=
             ERROR_SUCCESS) {
             return false;
         }

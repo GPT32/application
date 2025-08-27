@@ -34,7 +34,7 @@ namespace lib::settings::alwaysOnTop {
     }
 
     bool save(bool input) {
-        return lib::registry::write(Key, input);
+        return lib::registry::write(Key, static_cast<DWORD>(input));
     }
 }
 

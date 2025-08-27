@@ -28,6 +28,13 @@ namespace lib::registry {
     bool read(const std::string& subKey, DWORD& output);
 
     /**
+     * @brief Reads a 64-bit unsigned int from the registry.
+     * @param subKey The registry sub key.
+     * @param output The output value.
+     */
+    bool read(const std::string& subKey, DWORD64& output);
+
+    /**
      * @brief Writes a string to the registry.
      * @param subKey    The registry sub key.
      * @param input     The input value.
@@ -40,4 +47,11 @@ namespace lib::registry {
      * @param input     The input value.
      */
     bool write(const std::string& subKey, DWORD input);
+
+    /**
+     * @brief Writes a 64-bit unsigned int to the registry.
+     * @param subKey    The registry sub key.
+     * @param input     The input value.
+     */
+    bool write(const std::string& subKey, DWORD64 input);
 }

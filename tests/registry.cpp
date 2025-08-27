@@ -36,6 +36,12 @@ int main() {
     assert(lib::registry::read(testKey, loadedValue));
     assert(loadedValue == newValue);
 
+    // uint64 test
+    uint64_t iNewValue = 1337;
+    uint64_t iLoadedValue;
+    assert(lib::registry::write(testKey, iNewValue));
+    assert(lib::registry::read(testKey, iLoadedValue));
+
     // clean up
     HKEY hKey;
 
