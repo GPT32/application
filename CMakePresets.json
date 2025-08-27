@@ -20,7 +20,7 @@
       "hidden": true,
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
-        "APP_AUTHOR": "Steve Rivera",
+        "APP_AUTHOR": "GPT32",
         "APP_DESCRIPTION": "Minimal ChatGPT client for Windows",
         "APP_ID": "gpt32",
         "APP_NAME": "GPT32",
