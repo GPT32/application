@@ -28,7 +28,7 @@ HWND ModelSelector::CreateControl(HWND hWnd) {
 
     // load selected model from registry
     std::string model;
-    lib::settings::load(lib::settings::model::Key, model);
+    lib::settings::model::load(model);
 
     // load models into combobox
     for (const char* id : ModelSelector::models) {

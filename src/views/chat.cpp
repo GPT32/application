@@ -194,8 +194,8 @@ void Chat::SendUserChat(HWND hWnd) {
 
     // send non-blocking api request
     std::string apiKey, model;
-    lib::settings::load(lib::settings::apiKey::Key, apiKey);
-    lib::settings::load(lib::settings::model::Key, model);
+    lib::settings::apiKey::load(apiKey);
+    lib::settings::model::load(model);
 
     std::jthread([apiKey, hWnd, hSelected, text, model, prevMessageId, instructions]() {
         auto r = lib::api::createResponse(apiKey, text, model, prevMessageId, instructions);

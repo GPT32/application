@@ -1,6 +1,7 @@
 add_library(app.lib STATIC
     api.cpp
     markdown.cpp
+    registry.cpp
     requests.cpp
     settings.cpp
     storage.cpp

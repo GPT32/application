@@ -117,7 +117,7 @@ std::string StatusBar::FormatNumber(uint64_t number) {
 void StatusBar::Load(HWND hWnd) {
     // bail early if no api key configured
     std::string adminApiKey;
-    lib::settings::load(lib::settings::adminApiKey::Key, adminApiKey);
+    lib::settings::adminApiKey::load(adminApiKey);
 
     if (adminApiKey.empty()) {
         return;

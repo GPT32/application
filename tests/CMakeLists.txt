@@ -8,10 +8,10 @@ add_executable(markdown markdown.cpp)
 target_link_libraries(markdown PRIVATE app.lib)
 add_test(markdown markdown)
 
-# settings tests
-add_executable(settings settings.cpp)
-target_link_libraries(settings PRIVATE app.lib)
-add_test(settings settings)
+# registry tests
+add_executable(registry registry.cpp)
+target_link_libraries(registry PRIVATE app.lib)
+add_test(registry registry)
 
 # requests tests
 add_executable(requests requests.cpp)
