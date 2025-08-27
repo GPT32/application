@@ -46,3 +46,71 @@ namespace lib::settings::model {
         return lib::registry::write(Key, input);
     }
 }
+
+namespace lib::settings::statLastChecked {
+    bool load(std::chrono::system_clock::time_point& output) {
+        DWORD64 value = 0;
+
+        if (!lib::registry::read(Key, value)) {
+            return false;
+        }
+
+        output = std::chrono::system_clock::time_point(std::chrono::seconds(value));
+        return true;
+    }
+    bool save(const std::chrono::system_clock::time_point& input) {
+        auto seconds = std::chrono::duration_cast<std::chrono::seconds>(input.time_since_epoch());
+        return lib::registry::write(Key, static_cast<DWORD64>(seconds.count()));
+    }
+}
+
+namespace lib::settings::statCost {
+    bool load(long long& output) {
+        DWORD64 value = 0;
+
+        if (!lib::registry::read(Key, value)) {
+            return false;
+        }
+
+        output = value;
+        return true;
+    }
+
+    bool save(long long input) {
+        return lib::registry::write(Key, static_cast<DWORD64>(input));
+    }
+}
+
+namespace lib::settings::statInputTokens {
+    bool load(int& output) {
+        DWORD value = 0;
+
+        if (!lib::registry::read(Key, value)) {
+            return false;
+        }
+
+        output = value;
+        return true;
+    }
+
+    bool save(int input) {
+        return lib::registry::write(Key, static_cast<DWORD>(input));
+    }
+}
+
+namespace lib::settings::statOutputTokens {
+    bool load(int& output) {
+        DWORD value = 0;
+
+        if (!lib::registry::read(Key, value)) {
+            return false;
+        }
+
+        output = value;
+        return true;
+    }
+
+    bool save(int input) {
+        return lib::registry::write(Key, static_cast<DWORD>(input));
+    }
+}

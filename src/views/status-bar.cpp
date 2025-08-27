@@ -123,8 +123,34 @@ void StatusBar::Load(HWND hWnd) {
         return;
     }
 
-    // get the timestamp for the start of the current month
+    // load data from cache if we can
     auto now = std::chrono::system_clock::now();
+
+    std::chrono::system_clock::time_point lastChecked;
+    lib::settings::statLastChecked::load(lastChecked);
+
+    if (now - lastChecked < std::chrono::days(1)) {
+        // update cost
+        long long cost;
+        lib::settings::statCost::load(cost);
+        parts[0][0].second = StatusBar::FormatCurrency(cost);
+
+        // update input and output tokens
+        int inputTokens;
+        int outputTokens;
+
+        lib::settings::statInputTokens::load(inputTokens);
+        lib::settings::statOutputTokens::load(outputTokens);
+
+        parts[0][1].second = StatusBar::FormatNumber(inputTokens);
+        parts[0][2].second = StatusBar::FormatNumber(outputTokens);
+
+        // render the data
+        StatusBar::RenderText(hWnd);
+        return;
+    }
+
+    // get the timestamp for the start of the current month
     auto today = std::chrono::year_month_day(std::chrono::floor<std::chrono::days>(now));
     auto month = today.year() / today.month() / std::chrono::day(1);
 
@@ -171,6 +197,7 @@ LRESULT StatusBar::OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
         case 0: {
             int inputTokens = 0;
             int outputTokens = 0;
+
             for (auto& bucket : json) {
                 if (!bucket.contains("results") || !bucket["results"].is_array()) {
                     continue;
@@ -182,6 +209,9 @@ LRESULT StatusBar::OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
                 }
             }
 
+            // cache the values and update their status bar parts
+            lib::settings::statInputTokens::save(inputTokens);
+            lib::settings::statOutputTokens::save(outputTokens);
             parts[partIdx][1].second = StatusBar::FormatNumber(inputTokens);
             parts[partIdx][2].second = StatusBar::FormatNumber(outputTokens);
 
@@ -203,14 +233,21 @@ LRESULT StatusBar::OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
                 }
             }
 
+            // cache the value and update its status bar part
+            lib::settings::statCost::save(cost);
             parts[partIdx][0].second = StatusBar::FormatCurrency(cost);
             break;
         }
     }
 
-    // update the status bar part data and clean up
+    // update last checked timestamp
+    auto now = std::chrono::system_clock::now();
+    lib::settings::statLastChecked::save(now);
+
+    // render the data
     StatusBar::RenderText(hWnd);
 
+    // clean up
     delete r;
     return 0;
 }
