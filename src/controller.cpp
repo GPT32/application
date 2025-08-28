@@ -369,6 +369,9 @@ LRESULT Controller::OnNotify(HWND hWnd, LPARAM lParam) {
                 ShowWindow(hEdit, SW_HIDE);
                 ShowWindow(hButtonSend, SW_HIDE);
                 ShowWindow(hStaticIntro, SW_SHOW);
+
+                // reset status bar usage stats
+                SendMessage(hWnd, WM_USER_UPDATE_SESSION_USAGE, 0, 0);
                 return 0;
             }
 
@@ -397,6 +400,9 @@ LRESULT Controller::OnNotify(HWND hWnd, LPARAM lParam) {
             } else {
                 SetWindowText(hButtonSend, "Send");
             }
+
+            // update status bar usage stats
+            SendMessage(hWnd, WM_USER_UPDATE_SESSION_USAGE, MAKEWPARAM(chat->inputTokens, chat->outputTokens), 0);
         }
         default:
             return 0;
@@ -409,6 +415,8 @@ LRESULT Controller::OnUserMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM
             return StatusBar::Instance().OnAdminApiResponse(hWnd, wParam, lParam);
         case WM_USER_API_RESPONSE:
             return Chat::Instance().OnApiResponse(hWnd, wParam, lParam);
+        case WM_USER_UPDATE_SESSION_USAGE:
+            return StatusBar::Instance().OnUpdateSessionUsage(hWnd, wParam, lParam);
         default:
             return 0;
     }

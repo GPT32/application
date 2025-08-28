@@ -5,11 +5,8 @@
 #include <string>
 #include <vector>
 
-/** @brief Status bar key/value pair. */
-using StatusBarField = std::pair<std::string, std::string>;
-
 /** @brief Status bar part. */
-using StatusBarPart = std::vector<StatusBarField>;
+using StatusBarPart = std::pair<std::string, std::string>;
 
 /**
  * @class StatusBar
@@ -25,8 +22,11 @@ class StatusBar {
 
     /** @brief The status bar parts. */
     std::vector<StatusBarPart> parts = {
-        { { "Monthly Spend", "0" }, { "Input Tokens", "0" }, { "Output Tokens", "0" } },
-        { { "Session Input Tokens", "0" }, { "Output Tokens", "0" } }
+        { "Monthly Spend", "0" },
+        { "Monthly Input Tokens", "0" },
+        { "Monthly Output Tokens", "0" },
+        { "Session Input Tokens", "0" },
+        { "Session Output Tokens", "0" },
     };
 
     /** @brief Reusable locale instance. */
@@ -55,6 +55,15 @@ class StatusBar {
      */
     LRESULT OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
+    /**
+     * @brief `WM_USER_UPDATE_SESSION_USAGE` Win32 message handler.
+     * @param hWnd      Handle to the main window.
+     * @param wParam    Additional message information.
+     * @param lParam    Additional message information.
+     * @return LRESULT Result of message processing.
+     */
+    LRESULT OnUpdateSessionUsage(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
    private:
     /** @brief Prevents external instantiation of the class. */
     StatusBar() = default;
@@ -64,14 +73,14 @@ class StatusBar {
      * @param number The number to format.
      * @return string The formatted number.
      */
-    std::string FormatCurrency(const long long number);
+    std::string FormatCurrency(const uint32_t number);
 
     /**
      * @brief Formats a large number into human-readable string with suffixes.
      * @param number The number to shorten.
      * @return string The formatted number.
      */
-    std::string FormatNumber(uint64_t number);
+    std::string FormatNumber(uint32_t number);
 
     /**
      * @brief Loads the async data from the backend.

@@ -244,8 +244,9 @@ LRESULT CALLBACK View::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
             return Controller::Instance().OnNotify(hWnd, lParam);
         case WM_SIZE:
             return View::Instance().LayoutControls(hWnd, lParam);
-        case WM_USER_API_RESPONSE:
         case WM_USER_ADMIN_API_RESPONSE:
+        case WM_USER_API_RESPONSE:
+        case WM_USER_UPDATE_SESSION_USAGE:
             return Controller::Instance().OnUserMessage(hWnd, message, wParam, lParam);
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);

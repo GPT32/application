@@ -71,7 +71,7 @@ HWND StatusBar::CreateControl(HWND hWnd) {
     return hStatusBar;
 }
 
-std::string StatusBar::FormatCurrency(const long long number) {
+std::string StatusBar::FormatCurrency(const uint32_t number) {
     // currency formatting requires a string stream
     std::ostringstream currency;
     currency.imbue(StatusBar::locale);
@@ -79,7 +79,7 @@ std::string StatusBar::FormatCurrency(const long long number) {
     return currency.str();
 }
 
-std::string StatusBar::FormatNumber(uint64_t number) {
+std::string StatusBar::FormatNumber(uint32_t number) {
     static constexpr const char* suffixes[] = { "", "K", "M", "B", "T" };
     static constexpr int numSuffixes = sizeof(suffixes) / sizeof(suffixes[0]);
 
@@ -131,19 +131,19 @@ void StatusBar::Load(HWND hWnd) {
 
     if (now - lastChecked < std::chrono::days(1)) {
         // update cost
-        long long cost;
+        uint32_t cost;
         lib::settings::statCost::load(cost);
-        parts[0][0].second = StatusBar::FormatCurrency(cost);
+        parts[0].second = StatusBar::FormatCurrency(cost);
 
         // update input and output tokens
-        int inputTokens;
-        int outputTokens;
+        uint32_t inputTokens;
+        uint32_t outputTokens;
 
         lib::settings::statInputTokens::load(inputTokens);
         lib::settings::statOutputTokens::load(outputTokens);
 
-        parts[0][1].second = StatusBar::FormatNumber(inputTokens);
-        parts[0][2].second = StatusBar::FormatNumber(outputTokens);
+        parts[1].second = StatusBar::FormatNumber(inputTokens);
+        parts[2].second = StatusBar::FormatNumber(outputTokens);
 
         // render the data
         StatusBar::RenderText(hWnd);
@@ -161,14 +161,14 @@ void StatusBar::Load(HWND hWnd) {
     std::jthread([adminApiKey, hWnd, monthTimestamp]() {
         auto r = lib::api::usage(adminApiKey, monthTimestamp);
         auto* body = new std::string(r.body.dump());
-        PostMessage(hWnd, WM_USER_ADMIN_API_RESPONSE, MAKEWPARAM(0, 0), reinterpret_cast<LPARAM>(body));
+        PostMessage(hWnd, WM_USER_ADMIN_API_RESPONSE, 0, reinterpret_cast<LPARAM>(body));
     }).detach();
 
     // load monthly cost
     std::jthread([adminApiKey, hWnd, monthTimestamp]() {
         auto r = lib::api::cost(adminApiKey, monthTimestamp);
         auto* body = new std::string(r.body.dump());
-        PostMessage(hWnd, WM_USER_ADMIN_API_RESPONSE, MAKEWPARAM(1, 0), reinterpret_cast<LPARAM>(body));
+        PostMessage(hWnd, WM_USER_ADMIN_API_RESPONSE, 1, reinterpret_cast<LPARAM>(body));
     }).detach();
 }
 
@@ -187,16 +187,11 @@ LRESULT StatusBar::OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
         return 0;
     }
 
-    // extract the usage and cost data
-    //
-    // lower 16 bits = type (usage, cost)
-    // upper 16 bits = status bar part index
-    int partIdx = HIWORD(wParam);
-
-    switch (LOWORD(wParam)) {
+    // handle statistic type
+    switch (wParam) {
         case 0: {
-            int inputTokens = 0;
-            int outputTokens = 0;
+            uint32_t inputTokens = 0;
+            uint32_t outputTokens = 0;
 
             for (auto& bucket : json) {
                 if (!bucket.contains("results") || !bucket["results"].is_array()) {
@@ -212,13 +207,12 @@ LRESULT StatusBar::OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
             // cache the values and update their status bar parts
             lib::settings::statInputTokens::save(inputTokens);
             lib::settings::statOutputTokens::save(outputTokens);
-            parts[partIdx][1].second = StatusBar::FormatNumber(inputTokens);
-            parts[partIdx][2].second = StatusBar::FormatNumber(outputTokens);
-
+            parts[1].second = StatusBar::FormatNumber(inputTokens);
+            parts[2].second = StatusBar::FormatNumber(outputTokens);
             break;
         }
         case 1: {
-            long long cost = 0;
+            uint32_t cost = 0;
 
             for (auto& bucket : json) {
                 if (!bucket.contains("results") || !bucket["results"].is_array()) {
@@ -229,13 +223,13 @@ LRESULT StatusBar::OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
                     // convert explicitly to double from json to preserve
                     // precision and convert from cents to dollar
                     auto cents = bucketItem["amount"]["value"].get<double>();
-                    cost += static_cast<long long>(cents * 100);
+                    cost += static_cast<uint32_t>(cents * 100);
                 }
             }
 
             // cache the value and update its status bar part
             lib::settings::statCost::save(cost);
-            parts[partIdx][0].second = StatusBar::FormatCurrency(cost);
+            parts[0].second = StatusBar::FormatCurrency(cost);
             break;
         }
     }
@@ -252,20 +246,28 @@ LRESULT StatusBar::OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     return 0;
 }
 
+LRESULT StatusBar::OnUpdateSessionUsage(HWND hWnd, WPARAM wParam, LPARAM) {
+    // extract the input and output tokens
+    //
+    // lower 16 bits = input tokens
+    // upper 16 bits = output tokens
+    uint32_t inputTokens = LOWORD(wParam);
+    uint32_t outputTokens = HIWORD(wParam);
+
+    // update the status bar parts
+    parts[3].second = StatusBar::FormatNumber(inputTokens);
+    parts[4].second = StatusBar::FormatNumber(outputTokens);
+
+    // render the text
+    StatusBar::RenderText(hWnd);
+    return 0;
+}
+
 void StatusBar::RenderText(HWND hWnd) {
     HWND hStatusBar = GetDlgItem(hWnd, IDC_STATUS_BAR);
 
     for (auto const& [partIdx, part] : StatusBar::parts | std::views::enumerate) {
-        std::string text;
-
-        for (auto const& [fieldIdx, field] : part | std::views::enumerate) {
-            text += std::format("{}: {}", field.first, field.second);
-
-            if (size_t(fieldIdx) < part.size() - 1) {
-                text += ", ";
-            }
-        }
-
+        auto text = std::format("{}: {}", part.first, part.second);
         SendMessage(hStatusBar, SB_SETTEXT, partIdx, reinterpret_cast<LPARAM>(text.c_str()));
     }
 }

@@ -66,6 +66,8 @@ LRESULT Chat::OnApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     // extract json from response
     std::string messageId;
     std::string messageContent;
+    uint32_t inputTokens = 0;
+    uint32_t outputTokens = 0;
 
     try {
         auto json = nlohmann::json::parse(*r);
@@ -76,6 +78,12 @@ LRESULT Chat::OnApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
             } else {
                 messageId = json.value("id", "");
                 messageContent = json["output"][0]["content"][0].value("text", "");
+
+                // collect usage stats
+                if (json.contains("usage")) {
+                    inputTokens = json["usage"]["input_tokens"];
+                    outputTokens = json["usage"]["output_tokens"];
+                }
             }
         }
     } catch (const std::exception& e) {
@@ -84,6 +92,10 @@ LRESULT Chat::OnApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     }
 
     // save changes to disk
+    //
+    // @note: input tokens already come aggregated
+    chat->inputTokens = inputTokens;
+    chat->outputTokens += outputTokens;
     chat->messages.push_back(std::make_unique<lib::storage::Message>(messageId, messageContent));
     lib::storage::save(Model::Instance().projects, lib::storage::FILENAME);
 
@@ -93,6 +105,9 @@ LRESULT Chat::OnApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
 
     if (hSelectedCurrent == hSelected) {
         Chat::RenderMessages(hWnd, chat);
+
+        // update the status bar usage stats
+        SendMessage(hWnd, WM_USER_UPDATE_SESSION_USAGE, MAKEWPARAM(inputTokens, outputTokens), 0);
     }
 
     delete r;

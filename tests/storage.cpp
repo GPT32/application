@@ -24,6 +24,8 @@ int main() {
 
     auto chatTwo = std::make_unique<lib::storage::Chat>();
     chatTwo->name = "two";
+    chatTwo->inputTokens = 1337;
+    chatTwo->outputTokens = 1338;
 
     projectFoo->chats.emplace_back(std::move(chatOne));
     projectFoo->chats.emplace_back(std::move(chatTwo));
@@ -59,6 +61,8 @@ int main() {
     assert(projects[0]->chats[0]->messages[0]->id == "abc123");
     assert(projects[0]->chats[0]->messages[0]->content == "Hello from chat one");
     assert(projects[1]->instructions == "bar's instructions");
+    assert(projects[0]->chats[1]->inputTokens == 1337);
+    assert(projects[0]->chats[1]->outputTokens == 1338);
 
     // delete project
     bool deleted = lib::storage::deleteProject(projects, "baz");

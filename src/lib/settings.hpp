@@ -119,13 +119,13 @@ namespace lib::settings::statCost {
      * @brief Loads the setting from the registry.
      * @param output Reference to where the setting will be stored.
      */
-    bool load(long long& output);
+    bool load(uint32_t& output);
 
     /**
      * @brief Saves the setting to the registry.
      * @param input The setting to save.
      */
-    bool save(long long input);
+    bool save(uint32_t input);
 }
 
 /**
@@ -140,13 +140,13 @@ namespace lib::settings::statInputTokens {
      * @brief Loads the setting from the registry.
      * @param output Reference to where the setting will be stored.
      */
-    bool load(int& output);
+    bool load(uint32_t& output);
 
     /**
      * @brief Saves the setting to the registry.
      * @param input The setting to save.
      */
-    bool save(int input);
+    bool save(uint32_t input);
 }
 
 /**
@@ -161,11 +161,11 @@ namespace lib::settings::statOutputTokens {
      * @brief Loads the setting from the registry.
      * @param output Reference to where the setting will be stored.
      */
-    bool load(int& output);
+    bool load(uint32_t& output);
 
     /**
      * @brief Saves the setting to the registry.
      * @param input The setting to save.
      */
-    bool save(int input);
+    bool save(uint32_t input);
 }

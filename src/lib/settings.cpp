@@ -65,24 +65,7 @@ namespace lib::settings::statLastChecked {
 }
 
 namespace lib::settings::statCost {
-    bool load(long long& output) {
-        DWORD64 value = 0;
-
-        if (!lib::registry::read(Key, value)) {
-            return false;
-        }
-
-        output = value;
-        return true;
-    }
-
-    bool save(long long input) {
-        return lib::registry::write(Key, static_cast<DWORD64>(input));
-    }
-}
-
-namespace lib::settings::statInputTokens {
-    bool load(int& output) {
+    bool load(uint32_t& output) {
         DWORD value = 0;
 
         if (!lib::registry::read(Key, value)) {
@@ -93,13 +76,30 @@ namespace lib::settings::statInputTokens {
         return true;
     }
 
-    bool save(int input) {
+    bool save(uint32_t input) {
+        return lib::registry::write(Key, static_cast<DWORD>(input));
+    }
+}
+
+namespace lib::settings::statInputTokens {
+    bool load(uint32_t& output) {
+        DWORD value = 0;
+
+        if (!lib::registry::read(Key, value)) {
+            return false;
+        }
+
+        output = value;
+        return true;
+    }
+
+    bool save(uint32_t input) {
         return lib::registry::write(Key, static_cast<DWORD>(input));
     }
 }
 
 namespace lib::settings::statOutputTokens {
-    bool load(int& output) {
+    bool load(uint32_t& output) {
         DWORD value = 0;
 
         if (!lib::registry::read(Key, value)) {
@@ -110,7 +110,7 @@ namespace lib::settings::statOutputTokens {
         return true;
     }
 
-    bool save(int input) {
+    bool save(uint32_t input) {
         return lib::registry::write(Key, static_cast<DWORD>(input));
     }
 }

@@ -26,6 +26,9 @@
  *                  [uint32] Length of chat name
  *                  [bytes] Chat name
  *
+ *                  [uint32] Number of input tokens
+ *                  [uint32] Number of output tokens
+ *
  *                  [uint32] Number of Messages
  *                      [Message 1]
  *                          [uint32] Length of message id
@@ -51,6 +54,8 @@ namespace lib::storage {
     struct Chat {
         std::string id;
         std::string name;
+        uint32_t inputTokens;
+        uint32_t outputTokens;
         std::vector<std::unique_ptr<Message>> messages;
         Project* parent = nullptr;
     };
@@ -99,6 +104,13 @@ namespace lib::storage {
     void readString(std::ifstream& in, std::string& str);
 
     /**
+     * @brief Reads a uint32 from an input stream in binary format.
+     * @param in    Input stream to read from.
+     * @param value Output uint32 to populate.
+     */
+    void readUInt32(std::ifstream& in, uint32_t& value);
+
+    /**
      * @brief Saves a list of projects to a binary file.
      *
      * The format written is compatible with the `load()` function.
@@ -120,4 +132,11 @@ namespace lib::storage {
      * @param str String to write.
      */
     void writeString(std::ofstream& out, const std::string& str);
+
+    /**
+     * @brief Writes a uint32 to an output stream in binary format.
+     * @param out   Ouput stream to write to.
+     * @param value Uint32 to write.
+     */
+    void writeUInt32(std::ofstream& out, uint32_t& value);
 };

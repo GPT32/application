@@ -50,6 +50,8 @@ namespace lib::storage {
                 chat->parent = project.get();
                 readString(in, chat->id);
                 readString(in, chat->name);
+                readUInt32(in, chat->inputTokens);
+                readUInt32(in, chat->outputTokens);
 
                 uint32_t messageCount;
                 in.read(reinterpret_cast<char*>(&messageCount), sizeof(messageCount));
@@ -80,6 +82,10 @@ namespace lib::storage {
         in.read(&str[0], len);
     }
 
+    void readUInt32(std::ifstream& in, uint32_t& value) {
+        in.read(reinterpret_cast<char*>(&value), sizeof(value));
+    }
+
     void save(const std::vector<std::unique_ptr<Project>>& projects, const std::string& filename) {
         std::ofstream out(filename, std::ios::binary);
         uint32_t projectCount = static_cast<uint32_t>(projects.size());
@@ -95,6 +101,8 @@ namespace lib::storage {
             for (const auto& chat : project->chats) {
                 writeString(out, chat->id);
                 writeString(out, chat->name);
+                writeUInt32(out, chat->inputTokens);
+                writeUInt32(out, chat->outputTokens);
 
                 uint32_t messageCount = static_cast<uint32_t>(chat->messages.size());
                 out.write(reinterpret_cast<const char*>(&messageCount), sizeof(messageCount));
@@ -111,5 +119,9 @@ namespace lib::storage {
         uint32_t len = static_cast<uint32_t>(str.size());
         out.write(reinterpret_cast<const char*>(&len), sizeof(len));
         out.write(str.data(), len);
+    }
+
+    void writeUInt32(std::ofstream& out, uint32_t& value) {
+        out.write(reinterpret_cast<const char*>(&value), sizeof(value));
     }
 }
