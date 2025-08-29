@@ -11,6 +11,7 @@
 
 #include "lib/api.hpp"
 #include "lib/settings.hpp"
+#include "lib/storage.hpp"
 #include "resource.hpp"
 
 StatusBar& StatusBar::Instance() {
@@ -246,19 +247,17 @@ LRESULT StatusBar::OnAdminApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     return 0;
 }
 
-LRESULT StatusBar::OnUpdateSessionUsage(HWND hWnd, WPARAM wParam, LPARAM) {
-    // extract the input and output tokens
-    //
-    // lower 16 bits = input tokens
-    // upper 16 bits = output tokens
-    uint32_t inputTokens = LOWORD(wParam);
-    uint32_t outputTokens = HIWORD(wParam);
+LRESULT StatusBar::OnUpdateSessionUsage(HWND hWnd, WPARAM, LPARAM lParam) {
+    auto* chat = reinterpret_cast<lib::storage::Chat*>(lParam);
 
-    // update the status bar parts
-    parts[3].second = StatusBar::FormatNumber(inputTokens);
-    parts[4].second = StatusBar::FormatNumber(outputTokens);
+    if (!chat) {
+        parts[3].second = "0";
+        parts[4].second = "0";
+    } else {
+        parts[3].second = StatusBar::FormatNumber(chat->inputTokens);
+        parts[4].second = StatusBar::FormatNumber(chat->outputTokens);
+    }
 
-    // render the text
     StatusBar::RenderText(hWnd);
     return 0;
 }

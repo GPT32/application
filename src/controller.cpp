@@ -402,7 +402,7 @@ LRESULT Controller::OnNotify(HWND hWnd, LPARAM lParam) {
             }
 
             // update status bar usage stats
-            SendMessage(hWnd, WM_USER_UPDATE_SESSION_USAGE, MAKEWPARAM(chat->inputTokens, chat->outputTokens), 0);
+            SendMessage(hWnd, WM_USER_UPDATE_SESSION_USAGE, 0, reinterpret_cast<LPARAM>(chat));
         }
         default:
             return 0;

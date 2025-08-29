@@ -107,7 +107,7 @@ LRESULT Chat::OnApiResponse(HWND hWnd, WPARAM wParam, LPARAM lParam) {
         Chat::RenderMessages(hWnd, chat);
 
         // update the status bar usage stats
-        SendMessage(hWnd, WM_USER_UPDATE_SESSION_USAGE, MAKEWPARAM(inputTokens, outputTokens), 0);
+        SendMessage(hWnd, WM_USER_UPDATE_SESSION_USAGE, 0, reinterpret_cast<LPARAM>(chat));
     }
 
     delete r;
