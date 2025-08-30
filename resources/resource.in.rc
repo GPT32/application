@@ -68,7 +68,7 @@ BEGIN
     END
     POPUP "&Edit"
     BEGIN
-        MENUITEM "&API Key...",                 IDM_EDIT_API_KEY
+        MENUITEM "&API Keys...",                IDM_EDIT_API_KEYS
         MENUITEM "&Project Instructions...",    IDM_EDIT_INSTRUCTIONS
     END
     POPUP "&View"
@@ -88,17 +88,19 @@ BEGIN
 END
 
 /**
- * Defines the dialog for configuring the user's API key.
+ * Configure API and admin API keys.
  */
-IDD_API_KEY_DIALOG  DIALOGEX 0, 0, 250, 50
+IDD_API_KEYS_DIALOG DIALOGEX 0, 0, 250, 80
 STYLE               DS_SETFONT | DS_SHELLFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT                9, "MS Shell Dlg 2"
-CAPTION             "Configure OpenAI API Key"
+CAPTION             "Configure OpenAI API Keys"
 BEGIN
-    LTEXT           "Enter your API Key",   IDC_STATIC_API_KEY,  0, 0, 0, 0
-    EDITTEXT                                IDC_EDIT_API_KEY,    0, 0, 0, 0, ES_AUTOHSCROLL
-    PUSHBUTTON      "Cancel",               IDCANCEL,            0, 0, 0, 0
-    DEFPUSHBUTTON   "OK",                   IDOK,                0, 0, 0, 0
+    LTEXT           "Enter your API Key",       IDC_STATIC_API_KEY,         0, 0, 0, 0
+    EDITTEXT                                    IDC_EDIT_API_KEY,           0, 0, 0, 0, ES_AUTOHSCROLL
+    LTEXT           "Enter your Admin API Key", IDC_STATIC_ADMIN_API_KEY,   0, 0, 0, 0
+    EDITTEXT                                    IDC_EDIT_ADMIN_API_KEY,     0, 0, 0, 0, ES_AUTOHSCROLL
+    PUSHBUTTON      "Cancel",                   IDCANCEL,                   0, 0, 0, 0
+    DEFPUSHBUTTON   "OK",                       IDOK,                       0, 0, 0, 0
 END
 
 /**

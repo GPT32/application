@@ -1,14 +1,14 @@
-#include "api-key.hpp"
+#include "keys.hpp"
 
 #include "lib/settings.hpp"
 #include "resource.hpp"
 
-ApiKey& ApiKey::Instance() {
-    static ApiKey instance;
+Keys& Keys::Instance() {
+    static Keys instance;
     return instance;
 }
 
-INT_PTR CALLBACK ApiKey::DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM) {
+INT_PTR CALLBACK Keys::DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM) {
     switch (message) {
         case WM_COMMAND:
             switch (LOWORD(wParam)) {
@@ -16,23 +16,23 @@ INT_PTR CALLBACK ApiKey::DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM)
                     EndDialog(hDlg, IDCANCEL);
                     return 1;
                 case IDOK:
-                    ApiKey::Instance().Save(hDlg);
+                    Keys::Instance().Save(hDlg);
                     EndDialog(hDlg, IDOK);
                     return 1;
                 default:
                     return 0;
             }
         case WM_INITDIALOG:
-            ApiKey::Instance().Load(hDlg);
-            ApiKey::Instance().LoadDialogIcon(hDlg);
-            ApiKey::Instance().LayoutControls(hDlg);
-            return ApiKey::Instance().CenterDialog(hDlg);
+            Keys::Instance().Load(hDlg);
+            Keys::Instance().LoadDialogIcon(hDlg);
+            Keys::Instance().LayoutControls(hDlg);
+            return Keys::Instance().CenterDialog(hDlg);
         default:
             return 0;
     }
 }
 
-INT_PTR ApiKey::CenterDialog(HWND hDlg) {
+INT_PTR Keys::CenterDialog(HWND hDlg) {
     HWND hParent = GetParent(hDlg);
     RECT rcDlg = {};
     RECT rcParent = {};
@@ -56,16 +56,18 @@ INT_PTR ApiKey::CenterDialog(HWND hDlg) {
     return 1;
 }
 
-INT_PTR ApiKey::CreateDialogBox(HINSTANCE hInstance, HWND hWnd) {
-    return DialogBox(hInstance, MAKEINTRESOURCE(IDD_API_KEY_DIALOG), hWnd, ApiKey::DlgProc);
+INT_PTR Keys::CreateDialogBox(HINSTANCE hInstance, HWND hWnd) {
+    return DialogBox(hInstance, MAKEINTRESOURCE(IDD_API_KEYS_DIALOG), hWnd, Keys::DlgProc);
 }
 
-LRESULT ApiKey::LayoutControls(HWND hDlg) {
+LRESULT Keys::LayoutControls(HWND hDlg) {
     RECT rcDlg = {};
     GetClientRect(hDlg, &rcDlg);
 
-    HWND hText = GetDlgItem(hDlg, IDC_STATIC_API_KEY);
-    HWND hEdit = GetDlgItem(hDlg, IDC_EDIT_API_KEY);
+    HWND hTextApiKey = GetDlgItem(hDlg, IDC_STATIC_API_KEY);
+    HWND hTextAdminKey = GetDlgItem(hDlg, IDC_STATIC_ADMIN_API_KEY);
+    HWND hEditApiKey = GetDlgItem(hDlg, IDC_EDIT_API_KEY);
+    HWND hEditAdminKey = GetDlgItem(hDlg, IDC_EDIT_ADMIN_API_KEY);
     HWND hButtonOk = GetDlgItem(hDlg, IDOK);
     HWND hButtonCancel = GetDlgItem(hDlg, IDCANCEL);
 
@@ -77,8 +79,22 @@ LRESULT ApiKey::LayoutControls(HWND hDlg) {
     int dlgHeight = rcDlg.bottom - rcDlg.top;
     int buttonWidth = dlgWidth / 3;
 
-    SetWindowPos(hText, nullptr, SPACING, SPACING, dlgWidth - PADDING, textHeight, SWP_NOZORDER);
-    SetWindowPos(hEdit, nullptr, SPACING, textHeight + SPACING, dlgWidth - PADDING, editHeight, SWP_NOZORDER);
+    SetWindowPos(hTextApiKey, nullptr, SPACING, SPACING, dlgWidth - PADDING, textHeight, SWP_NOZORDER);
+    SetWindowPos(hEditApiKey, nullptr, SPACING, textHeight + SPACING, dlgWidth - PADDING, editHeight, SWP_NOZORDER);
+    SetWindowPos(hTextAdminKey,
+        nullptr,
+        SPACING,
+        textHeight + editHeight + PADDING,
+        dlgWidth - PADDING,
+        textHeight,
+        SWP_NOZORDER);
+    SetWindowPos(hEditAdminKey,
+        nullptr,
+        SPACING,
+        (textHeight * 2) + editHeight + PADDING,
+        dlgWidth - PADDING,
+        editHeight,
+        SWP_NOZORDER);
     SetWindowPos(hButtonCancel,
         nullptr,
         dlgWidth - (buttonWidth * 2 - SPACING),
@@ -97,24 +113,40 @@ LRESULT ApiKey::LayoutControls(HWND hDlg) {
     return 0;
 }
 
-void ApiKey::Load(HWND hDlg) {
+void Keys::Load(HWND hDlg) {
     std::string apiKey;
+    std::string adminKey;
 
-    if (!lib::settings::apiKey::load(apiKey)) {
-        return;
+    if (lib::settings::apiKey::load(apiKey)) {
+        SetDlgItemText(hDlg, IDC_EDIT_API_KEY, apiKey.c_str());
     }
 
-    SetDlgItemText(hDlg, IDC_EDIT_API_KEY, apiKey.c_str());
+    if (lib::settings::adminApiKey::load(adminKey)) {
+        SetDlgItemText(hDlg, IDC_EDIT_ADMIN_API_KEY, adminKey.c_str());
+    }
 }
 
-void ApiKey::LoadDialogIcon(HWND hDlg) {
+void Keys::LoadDialogIcon(HWND hDlg) {
     HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON));
     SendMessage(hDlg, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
 }
 
-void ApiKey::Save(HWND hDlg) {
+void Keys::Save(HWND hDlg) {
+    // api key
     char cApiKey[256];
     GetDlgItemText(hDlg, IDC_EDIT_API_KEY, cApiKey, std::size(cApiKey));
     std::string sApiKey(cApiKey);
-    lib::settings::apiKey::save(sApiKey);
+
+    if (!sApiKey.empty()) {
+        lib::settings::apiKey::save(sApiKey);
+    }
+
+    // admin key
+    char cAdminKey[256];
+    GetDlgItemText(hDlg, IDC_EDIT_ADMIN_API_KEY, cAdminKey, std::size(cAdminKey));
+    std::string sAdminKey(cAdminKey);
+
+    if (!sAdminKey.empty()) {
+        lib::settings::adminApiKey::save(sAdminKey);
+    }
 }

@@ -9,9 +9,9 @@
 #include "model.hpp"
 #include "resource.hpp"
 #include "views/about.hpp"
-#include "views/api-key.hpp"
 #include "views/chat.hpp"
 #include "views/instructions.hpp"
+#include "views/keys.hpp"
 #include "views/model-selector.hpp"
 #include "views/status-bar.hpp"
 
@@ -82,9 +82,9 @@ LRESULT Controller::OnCommand(HWND hWnd, WPARAM wParam) {
             }
             break;
         }
-        case IDM_EDIT_API_KEY: {
+        case IDM_EDIT_API_KEYS: {
             HINSTANCE hInstance = GetModuleHandle(nullptr);
-            ApiKey::Instance().CreateDialogBox(hInstance, hWnd);
+            Keys::Instance().CreateDialogBox(hInstance, hWnd);
             break;
         }
         case IDM_EDIT_INSTRUCTIONS: {

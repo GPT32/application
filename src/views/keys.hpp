@@ -4,16 +4,16 @@
 #include <string>
 
 /**
- * @class ApiKey
- * @brief API key dialog box.
+ * @class Keys
+ * @brief API and Admin API keys dialog box.
  */
-class ApiKey {
+class Keys {
    public:
     /**
      * @brief Gets the singleton instance.
      * @return Reference to the singleton instance.
      */
-    static ApiKey& Instance();
+    static Keys& Instance();
 
     /**
      * @brief Processes messages sent to the dialog box.
@@ -35,7 +35,7 @@ class ApiKey {
 
    private:
     /** @brief Prevents external instantiation of the class. */
-    ApiKey() = default;
+    Keys() = default;
 
     /**
      * @brief Centers the dialog box within its parent window.
@@ -52,7 +52,7 @@ class ApiKey {
     LRESULT LayoutControls(HWND hDlg);
 
     /**
-     * @brief Loads the api key from the registry into the edit control.
+     * @brief Loads the api keys from the registry into the edit controls.
      * @param hDlg Handle to the dialog box.
      */
     void Load(HWND hDlg);
@@ -64,7 +64,7 @@ class ApiKey {
     void LoadDialogIcon(HWND hDlg);
 
     /**
-     * @brief Saves the api key to the registry.
+     * @brief Saves the api keys to the registry.
      * @param hDlg Handle to the dialog box.
      */
     void Save(HWND hDlg);

@@ -40,7 +40,7 @@ add_executable(${APP_ID}
     src/controller.cpp
     src/model.cpp
     src/view.cpp
-    src/views/api-key.cpp
+    src/views/keys.cpp
     src/views/chat.cpp
     src/views/model-selector.cpp
     src/views/instructions.cpp
