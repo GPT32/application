@@ -291,14 +291,8 @@ LRESULT Controller::OnNotify(HWND hWnd, LPARAM lParam) {
             return 0;
         }
         case TVN_ENDLABELEDIT: {
-            // bail early if nothing to edit
-            LPNMTVDISPINFO ptvdi = (LPNMTVDISPINFO)lParam;
-
-            if (!ptvdi->item.pszText) {
-                return 0;
-            }
-
             // fetch `lParam` from the edited item
+            LPNMTVDISPINFO ptvdi = (LPNMTVDISPINFO)lParam;
             TVITEM& tvi = ptvdi->item;
 
             if (!(tvi.mask & TVIF_PARAM)) {
@@ -306,6 +300,21 @@ LRESULT Controller::OnNotify(HWND hWnd, LPARAM lParam) {
                 TreeView_GetItem(nmhdr->hwndFrom, &tempTvi);
                 tvi.lParam = tempTvi.lParam;
                 tvi.mask |= TVIF_PARAM;
+            }
+
+            // handle empty text
+            const char* text = nullptr;
+
+            if (ptvdi->item.pszText && ptvdi->item.pszText[0]) {
+                text = ptvdi->item.pszText;
+            } else {
+                HTREEITEM hParent = TreeView_GetParent(nmhdr->hwndFrom, tvi.hItem);
+
+                if (hParent) {
+                    text = "New Chat";
+                } else {
+                    text = "New Project";
+                }
             }
 
             // handle new nodes being added
@@ -331,18 +340,20 @@ LRESULT Controller::OnNotify(HWND hWnd, LPARAM lParam) {
             }
 
             // update the tree node and projects struct
+            tvi.mask |= TVIF_TEXT;
+            tvi.pszText = const_cast<char*>(text);
             TreeView_SetItem(nmhdr->hwndFrom, &tvi);
 
             for (auto& project : Model::Instance().projects) {
                 if (reinterpret_cast<LPARAM>(project.get()) == tvi.lParam) {
-                    project->name = ptvdi->item.pszText;
+                    project->name = text;
                     break;
                 }
 
                 for (auto& chat : project->chats) {
                     if (reinterpret_cast<LPARAM>(chat.get()) == tvi.lParam) {
                         chat->id = lib::uuid::generate();
-                        chat->name = ptvdi->item.pszText;
+                        chat->name = text;
                         break;
                     }
                 }
