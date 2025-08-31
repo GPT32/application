@@ -72,6 +72,11 @@ namespace lib::markdown {
                 }
             }
 
+            // hyperlinks
+            processed = std::regex_replace(processed,
+                std::regex(R"(\[([^\]]+)\]\(([^)]+)\))"),
+                R"({\field{\*\fldinst{HYPERLINK "$2"}}{\fldrslt $1}})");
+
             // inline code blocks
             processed = std::regex_replace(processed, std::regex(R"(`([^`]+?)`)"), R"({\f1 $1})");
 
@@ -81,11 +86,6 @@ namespace lib::markdown {
             // italic
             processed = std::regex_replace(processed, std::regex(R"(\*(.+?)\*)"), R"({\i $1\i0})");
             processed = std::regex_replace(processed, std::regex(R"(_(.+?)_)"), R"({\i $1\i0})");
-
-            // hyperlinks
-            processed = std::regex_replace(processed,
-                std::regex(R"(\[([^\]]+)\]\(([^)]+)\))"),
-                R"({\field{\*\fldinst{HYPERLINK "$2"}}{\fldrslt $1}})");
 
             // close the paragraph if not already
             if (!std::regex_search(processed, std::regex(R"(\\par\}?$)"))) {
