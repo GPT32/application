@@ -33,26 +33,26 @@ namespace lib::markdown {
         bool inCodeBlock = false;
 
         while (std::getline(in, line)) {
-            std::string escaped = escapeRTF(line);
+            std::string processed = escapeRTF(line);
 
-            if (std::regex_match(escaped, std::regex(R"(^```([\w\-\+]*)\s*$)"))) {
+            if (std::regex_match(processed, std::regex(R"(^```([\w\-\+]*)\s*$)"))) {
                 inCodeBlock = !inCodeBlock;
                 rtf += inCodeBlock ? R"({\f1)" : R"(}\par )";
                 continue;
             }
 
             if (inCodeBlock) {
-                rtf += escaped + R"(\line )";
+                rtf += processed + R"(\line )";
                 continue;
             }
 
             // headers
             for (int level = 6; level >= 1; --level) {
                 std::string prefix(level, '#');
-                if (escaped.starts_with(prefix + " ")) {
+                if (processed.starts_with(prefix + " ")) {
                     int fontSize = 48 - (level - 1) * 6;
-                    std::string content = escaped.substr(level + 1);
-                    escaped = R"({\fs)" + std::to_string(fontSize) + R"( \b )" + content + R"(\b0})";
+                    std::string content = processed.substr(level + 1);
+                    processed = R"({\fs)" + std::to_string(fontSize) + R"( \b )" + content + R"(\b0})";
                     break;
                 }
             }
@@ -63,35 +63,35 @@ namespace lib::markdown {
                 std::string prefix1 = indent + "- ";
                 std::string prefix2 = indent + "* ";
 
-                if (escaped.starts_with(prefix1) || escaped.starts_with(prefix2)) {
+                if (processed.starts_with(prefix1) || processed.starts_with(prefix2)) {
                     int rtfIndent = 720 * (level + 1);
-                    std::string content = escaped.substr(prefix1.length());  // same length for `- ` and `* `
-                    escaped = R"({\pard\li)" + std::to_string(rtfIndent) + R"(\tx)" + std::to_string(rtfIndent) +
-                              R"(\fi-360\bullet\tab )" + content + R"(\par})";
+                    std::string content = processed.substr(prefix1.length());  // same length for `- ` and `* `
+                    processed = R"({\pard\li)" + std::to_string(rtfIndent) + R"(\tx)" + std::to_string(rtfIndent) +
+                                R"(\fi-360\bullet\tab )" + content + R"(\par})";
                     break;
                 }
             }
 
             // inline code blocks
-            escaped = std::regex_replace(escaped, std::regex(R"(`([^`]+?)`)"), R"({\f1 $1})");
+            processed = std::regex_replace(processed, std::regex(R"(`([^`]+?)`)"), R"({\f1 $1})");
 
             // bold
-            escaped = std::regex_replace(escaped, std::regex(R"(\*\*(.+?)\*\*)"), R"({\b $1\b0})");
+            processed = std::regex_replace(processed, std::regex(R"(\*\*(.+?)\*\*)"), R"({\b $1\b0})");
 
             // italic
-            escaped = std::regex_replace(escaped, std::regex(R"(\*(.+?)\*)"), R"({\i $1\i0})");
-            escaped = std::regex_replace(escaped, std::regex(R"(_(.+?)_)"), R"({\i $1\i0})");
+            processed = std::regex_replace(processed, std::regex(R"(\*(.+?)\*)"), R"({\i $1\i0})");
+            processed = std::regex_replace(processed, std::regex(R"(_(.+?)_)"), R"({\i $1\i0})");
 
             // hyperlinks
-            escaped = std::regex_replace(escaped,
+            processed = std::regex_replace(processed,
                 std::regex(R"(\[([^\]]+)\]\(([^)]+)\))"),
                 R"({\field{\*\fldinst{HYPERLINK "$2"}}{\fldrslt $1}})");
 
             // close the paragraph if not already
-            if (!std::regex_search(escaped, std::regex(R"(\\par\}?$)"))) {
-                rtf += escaped + R"(\par )";
+            if (!std::regex_search(processed, std::regex(R"(\\par\}?$)"))) {
+                rtf += processed + R"(\par )";
             } else {
-                rtf += escaped;
+                rtf += processed;
             }
         }
 
