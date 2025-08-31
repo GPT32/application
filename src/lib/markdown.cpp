@@ -80,12 +80,38 @@ namespace lib::markdown {
             // inline code blocks
             processed = std::regex_replace(processed, std::regex(R"(`([^`]+?)`)"), R"({\f1 $1})");
 
-            // bold
-            processed = std::regex_replace(processed, std::regex(R"(\*\*(.+?)\*\*)"), R"({\b $1\b0})");
+            // all other styles must be handled on a token basis to prevent
+            // conflicts, such as processing underscores inside hyperlinks.
+            std::string fragments;
+            std::regex rtfBlock(R"(\{[^{}]*\})");
+            std::sregex_token_iterator token(processed.begin(), processed.end(), rtfBlock, { -1, 0 });
+            std::sregex_token_iterator end;
 
-            // italic
-            processed = std::regex_replace(processed, std::regex(R"(\*(.+?)\*)"), R"({\i $1\i0})");
-            processed = std::regex_replace(processed, std::regex(R"(_(.+?)_)"), R"({\i $1\i0})");
+            bool inRtfBlock = false;
+
+            for (; token != end; ++token, inRtfBlock = !inRtfBlock) {
+                if (token->str().empty()) {
+                    continue;
+                }
+
+                if (inRtfBlock) {
+                    fragments += token->str();
+                    continue;
+                }
+
+                std::string fragment = token->str();
+
+                // bold
+                fragment = std::regex_replace(fragment, std::regex(R"(\*\*(.+?)\*\*)"), R"({\b $1\b0})");
+
+                // italic
+                fragment = std::regex_replace(fragment, std::regex(R"(\*(.+?)\*)"), R"({\i $1\i0})");
+                fragment = std::regex_replace(fragment, std::regex(R"(_(.+?)_)"), R"({\i $1\i0})");
+
+                fragments += fragment;
+            }
+
+            processed = fragments;
 
             // close the paragraph if not already
             if (!std::regex_search(processed, std::regex(R"(\\par\}?$)"))) {
