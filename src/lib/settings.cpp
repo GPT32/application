@@ -114,3 +114,20 @@ namespace lib::settings::statOutputTokens {
         return lib::registry::write(Key, static_cast<DWORD>(input));
     }
 }
+
+namespace lib::settings::leftPaneWidth {
+    bool load(int& output) {
+        DWORD value = 0;
+
+        if (!lib::registry::read(Key, value)) {
+            return false;
+        }
+
+        output = value;
+        return true;
+    }
+
+    bool save(int input) {
+        return lib::registry::write(Key, static_cast<DWORD>(input));
+    }
+}

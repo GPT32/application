@@ -1,9 +1,11 @@
 #include "view.hpp"
 
 #include "controller.hpp"
+#include "lib/settings.hpp"
 #include "resource.hpp"
 #include "views/chat.hpp"
 #include "views/model-selector.hpp"
+#include "views/splitter.hpp"
 #include "views/status-bar.hpp"
 
 View& View::Instance() {
@@ -59,6 +61,9 @@ LRESULT View::CreateControls(HWND hWnd) {
         (HMENU)(INT_PTR)IDC_TREEVIEW,
         GetModuleHandle(nullptr),
         nullptr);
+
+    // create the splitter control
+    Splitter::Instance().CreateControl(hWnd);
 
     // create the intro static control
     CreateWindowEx(0,
@@ -150,28 +155,49 @@ LRESULT View::LayoutControls(HWND hWnd, LPARAM lParam) {
     HWND hRichEdit = GetDlgItem(hWnd, IDC_RICHEDIT);
     HWND hStaticIntro = GetDlgItem(hWnd, IDC_STATIC_INTRO);
     HWND hTreeView = GetDlgItem(hWnd, IDC_TREEVIEW);
+    HWND hSplitter = GetDlgItem(hWnd, IDC_SPLITTER);
     HWND hStatusBar = GetDlgItem(hWnd, IDC_STATUS_BAR);
-
-    RECT rcStatusBar = {};
-    GetClientRect(hStatusBar, &rcStatusBar);
 
     const int buttonHeight = MAIN_WINDOW_BUTTON_HEIGHT;
     const int comboboxHeight = MAIN_WINDOW_BUTTON_HEIGHT;
     const int inputHeight = 120;
     const int staticIntroheight = MAIN_WINDOW_STATIC_HEIGHT;
 
-    int windowWidth = LOWORD(lParam);
-    int windowHeight = HIWORD(lParam);
-    int leftPaneWidth = windowWidth / 6;
-    int rightPaneWidth = windowWidth - leftPaneWidth;
+    // grab main window dimensions
+    int windowWidth;
+    int windowHeight;
 
-    int groupBoxHeight = 50;
+    if (!lParam) {
+        RECT rc = {};
+        GetClientRect(hWnd, &rc);
+        windowWidth = rc.right - rc.left;
+        windowHeight = rc.bottom - rc.top;
+    } else {
+        windowWidth = LOWORD(lParam);
+        windowHeight = HIWORD(lParam);
+    }
+
+    // left pane width can be user-defined
+    int leftPaneWidth = 0;
+
+    if (!lib::settings::leftPaneWidth::load(leftPaneWidth)) {
+        leftPaneWidth = windowWidth / 6;
+    }
+
+    // grab status bar dimensions
+    RECT rcStatusBar = {};
+    GetClientRect(hStatusBar, &rcStatusBar);
     int statusBarHeight = rcStatusBar.bottom - rcStatusBar.top;
+
+    int rightPaneWidth = windowWidth - leftPaneWidth;
+    int groupBoxHeight = 50;
     int richEditWidth = rightPaneWidth - SPACING;
     int richEditHeight = windowHeight - inputHeight - buttonHeight - statusBarHeight - (PADDING * 2);
     int staticIntroWidth = rightPaneWidth / 3;
     int treeViewWidth = leftPaneWidth - PADDING;
     int treeViewHeight = windowHeight - groupBoxHeight - statusBarHeight - PADDING - SPACING;
+    int splitterWidth = SPACING;
+    int splitterHeight = windowHeight - statusBarHeight;
 
     SetWindowPos(hGroupboxModel, nullptr, SPACING, SPACING, treeViewWidth, groupBoxHeight, SWP_NOZORDER);
     SetWindowPos(hCombobox,
@@ -182,6 +208,7 @@ LRESULT View::LayoutControls(HWND hWnd, LPARAM lParam) {
         comboboxHeight,
         SWP_NOZORDER);
     SetWindowPos(hTreeView, nullptr, SPACING, PADDING + groupBoxHeight, treeViewWidth, treeViewHeight, SWP_NOZORDER);
+    SetWindowPos(hSplitter, nullptr, SPACING + treeViewWidth, 0, splitterWidth, splitterHeight, SWP_NOZORDER);
     SetWindowPos(hStaticIntro,
         nullptr,
         (leftPaneWidth - SPACING) + ((rightPaneWidth - staticIntroWidth + SPACING) / 2),
@@ -248,6 +275,8 @@ LRESULT CALLBACK View::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
         case WM_USER_API_RESPONSE:
         case WM_USER_UPDATE_SESSION_USAGE:
             return Controller::Instance().OnUserMessage(hWnd, message, wParam, lParam);
+        case WM_USER_UPDATE_LAYOUT:
+            return View::Instance().LayoutControls(hWnd, lParam);
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);
     }

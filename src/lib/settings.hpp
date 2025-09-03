@@ -169,3 +169,24 @@ namespace lib::settings::statOutputTokens {
      */
     bool save(uint32_t input);
 }
+
+/**
+ * @namespace lib::settings::leftPaneWidth
+ * @brief Tracks left pane width.
+ */
+namespace lib::settings::leftPaneWidth {
+    /** @brief Registry subkey. */
+    inline const char* const Key = "LeftPaneWidth";
+
+    /**
+     * @brief Loads the setting from the registry.
+     * @param output Reference to where the setting will be stored.
+     */
+    bool load(int& output);
+
+    /**
+     * @brief Saves the setting to the registry.
+     * @param input The setting to save.
+     */
+    bool save(int input);
+}
