@@ -420,6 +420,13 @@ LRESULT Controller::OnNotify(HWND hWnd, LPARAM lParam) {
     }
 }
 
+LRESULT Controller::OnSizeMove(HWND hWnd, LPARAM) {
+    RECT rc;
+    GetWindowRect(hWnd, &rc);
+    lib::settings::windowPosition::save(rc);
+    return 1;
+}
+
 LRESULT Controller::OnUserMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
         case WM_USER_ADMIN_API_RESPONSE:

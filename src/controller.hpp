@@ -59,6 +59,14 @@ class Controller {
     LRESULT OnNotify(HWND hWnd, LPARAM lParam);
 
     /**
+     * @brief `WM_EXITSIZEMOVE` Win32 message handler.
+     * @param hWnd      Handle to the main window.
+     * @param lParam    Additional message information.
+     * @return LRESULT Result of message processing.
+     */
+    LRESULT OnSizeMove(HWND hWnd, LPARAM lParam);
+
+    /**
      * @brief User-defined Win32 message handler.
      * @param hWnd     Handle to the window receiving the message.
      * @param message  The Win32 message identifier.

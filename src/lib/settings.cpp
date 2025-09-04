@@ -131,3 +131,34 @@ namespace lib::settings::leftPaneWidth {
         return lib::registry::write(Key, static_cast<DWORD>(input));
     }
 }
+
+namespace lib::settings::windowPosition {
+    bool load(RECT& output) {
+        bool ok = true;
+
+        DWORD top, bottom;
+        DWORD left, right;
+
+        ok &= lib::registry::read(std::string(Key) + "\\Top", output.top);
+        ok &= lib::registry::read(std::string(Key) + "\\Bottom", output.bottom);
+        ok &= lib::registry::read(std::string(Key) + "\\Left", output.left);
+        ok &= lib::registry::read(std::string(Key) + "\\Right", output.right);
+
+        lib::registry::close();
+
+        return ok;
+    }
+
+    bool save(RECT input) {
+        bool ok = true;
+
+        ok &= lib::registry::write(std::string(Key) + "\\Top", input.top);
+        ok &= lib::registry::write(std::string(Key) + "\\Bottom", input.bottom);
+        ok &= lib::registry::write(std::string(Key) + "\\Left", input.left);
+        ok &= lib::registry::write(std::string(Key) + "\\Right", input.right);
+
+        lib::registry::close();
+
+        return ok;
+    }
+}

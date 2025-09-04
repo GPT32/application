@@ -1,4 +1,6 @@
 #pragma once
+#include <windows.h>
+
 #include <chrono>
 #include <string>
 
@@ -189,4 +191,25 @@ namespace lib::settings::leftPaneWidth {
      * @param input The setting to save.
      */
     bool save(int input);
+}
+
+/**
+ * @namespace lib::settings::windowPosition
+ * @brief Persists window positioning across restarts.
+ */
+namespace lib::settings::windowPosition {
+    /** @brief Registry subkey. */
+    inline const char* const Key = "Window Position";
+
+    /**
+     * @brief Loads the setting from the registry.
+     * @param output Reference to where the setting will be stored.
+     */
+    bool load(RECT& output);
+
+    /**
+     * @brief Saves the setting to the registry.
+     * @param input The setting to save.
+     */
+    bool save(RECT input);
 }

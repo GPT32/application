@@ -133,7 +133,7 @@ HWND View::CreateMainWindow(HINSTANCE hInstance) {
 
     RegisterClassEx(&wcex);
 
-    return CreateWindowEx(WS_EX_OVERLAPPEDWINDOW,
+    HWND hWnd = CreateWindowEx(WS_EX_OVERLAPPEDWINDOW,
         APP_ID,
         APP_NAME,
         WS_OVERLAPPEDWINDOW,
@@ -145,6 +145,21 @@ HWND View::CreateMainWindow(HINSTANCE hInstance) {
         nullptr,
         hInstance,
         nullptr);
+
+    // restore window positioning
+    RECT rc;
+
+    if (lib::settings::windowPosition::load(rc)) {
+        SetWindowPos(hWnd,
+            nullptr,
+            rc.left,
+            rc.top,
+            rc.right - rc.left,
+            rc.bottom - rc.top,
+            SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+
+    return hWnd;
 }
 
 LRESULT View::LayoutControls(HWND hWnd, LPARAM lParam) {
@@ -265,6 +280,8 @@ LRESULT CALLBACK View::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
+        case WM_EXITSIZEMOVE:
+            return Controller::Instance().OnSizeMove(hWnd, lParam);
         case WM_INITMENUPOPUP:
             return Controller::Instance().OnInitMenuPopup(hWnd, wParam, lParam);
         case WM_NOTIFY:
