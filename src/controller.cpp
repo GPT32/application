@@ -92,7 +92,7 @@ LRESULT Controller::OnCommand(HWND hWnd, WPARAM wParam) {
             Instructions::Instance().CreateDialogBox(hInstance, hWnd);
             break;
         }
-        case IDM_FILE_DELETE_CHAT: {
+        case IDM_EDIT_DELETE_CHAT: {
             HWND hTreeView = GetDlgItem(hWnd, IDC_TREEVIEW);
             HTREEITEM hSelected = TreeView_GetSelection(hTreeView);
             TVITEM tvi = { .mask = TVIF_PARAM, .hItem = hSelected };
@@ -104,7 +104,7 @@ LRESULT Controller::OnCommand(HWND hWnd, WPARAM wParam) {
             lib::storage::save(Model::Instance().projects, lib::storage::FILENAME);
             break;
         }
-        case IDM_FILE_DELETE_PROJECT: {
+        case IDM_EDIT_DELETE_PROJECT: {
             HWND hTreeView = GetDlgItem(hWnd, IDC_TREEVIEW);
             HTREEITEM hSelected = TreeView_GetSelection(hTreeView);
             TVITEM tvi = { .mask = TVIF_PARAM, .hItem = hSelected };
@@ -120,8 +120,16 @@ LRESULT Controller::OnCommand(HWND hWnd, WPARAM wParam) {
             DestroyWindow(hWnd);
             break;
         case IDM_FILE_NEW_CHAT: {
+            // grab current selection
             HWND hTreeView = GetDlgItem(hWnd, IDC_TREEVIEW);
-            HTREEITEM hProject = TreeView_GetSelection(hTreeView);
+            HTREEITEM hSelected = TreeView_GetSelection(hTreeView);
+
+            // figure out if we need to select the parent
+            // or if we're already a root node
+            HTREEITEM hParent = TreeView_GetParent(hTreeView, hSelected);
+            HTREEITEM hProject = hParent ? hParent : hSelected;
+
+            // now add the child node
             HTREEITEM hChat = Controller::AddTreeItem(hWnd, hProject);
             TreeView_SelectItem(hTreeView, hChat);
             TreeView_EditLabel(hTreeView, hChat);
@@ -222,18 +230,19 @@ LRESULT Controller::OnInitMenuPopup(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     HTREEITEM hSelected = TreeView_GetSelection(hTreeView);
     HTREEITEM hParent = TreeView_GetParent(hTreeView, hSelected);
 
+    // different conditions
+    bool isRootNode = hSelected && !hParent;
+    bool isChildNode = hSelected && hParent;
+
     switch (LOWORD(lParam)) {
         case 0: {
-            // buttons to disable if a root node is not selected
-            EnableMenuItem(hMenu, IDM_FILE_NEW_CHAT, hSelected && !hParent ? MF_ENABLED : MF_DISABLED);
-            EnableMenuItem(hMenu, IDM_FILE_DELETE_PROJECT, hSelected && !hParent ? MF_ENABLED : MF_DISABLED);
-
-            // buttons to disable if a child node is not selected
-            EnableMenuItem(hMenu, IDM_FILE_DELETE_CHAT, hSelected && hParent ? MF_ENABLED : MF_DISABLED);
+            EnableMenuItem(hMenu, IDM_FILE_NEW_CHAT, isRootNode || isChildNode ? MF_ENABLED : MF_DISABLED);
             break;
         }
         case 1: {
-            EnableMenuItem(hMenu, IDM_EDIT_INSTRUCTIONS, hSelected && !hParent ? MF_ENABLED : MF_DISABLED);
+            EnableMenuItem(hMenu, IDM_EDIT_DELETE_PROJECT, isRootNode ? MF_ENABLED : MF_DISABLED);
+            EnableMenuItem(hMenu, IDM_EDIT_INSTRUCTIONS, isRootNode ? MF_ENABLED : MF_DISABLED);
+            EnableMenuItem(hMenu, IDM_EDIT_DELETE_CHAT, isChildNode ? MF_ENABLED : MF_DISABLED);
         }
         case 2: {
             bool alwaysOnTop;

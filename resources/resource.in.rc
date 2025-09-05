@@ -61,15 +61,15 @@ BEGIN
         MENUITEM "&New Project",                IDM_FILE_NEW_PROJECT
         MENUITEM "New &Chat",                   IDM_FILE_NEW_CHAT
         MENUITEM SEPARATOR
-        MENUITEM "&Delete Project",             IDM_FILE_DELETE_PROJECT
-        MENUITEM "Delete Cha&t",                IDM_FILE_DELETE_CHAT
-        MENUITEM SEPARATOR
         MENUITEM "E&xit",                       IDM_FILE_EXIT
     END
     POPUP "&Edit"
     BEGIN
         MENUITEM "&API Keys...",                IDM_EDIT_API_KEYS
         MENUITEM "&Project Instructions...",    IDM_EDIT_INSTRUCTIONS
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete Project",             IDM_EDIT_DELETE_PROJECT
+        MENUITEM "Delete Cha&t",                IDM_EDIT_DELETE_CHAT
     END
     POPUP "&View"
     BEGIN
