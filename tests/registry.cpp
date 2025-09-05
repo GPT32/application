@@ -17,7 +17,7 @@ int main() {
     if (lib::Registry::Instance().read(testKey, value)) {
         HKEY hKey;
 
-        if (RegOpenKeyExA(HKEY_CURRENT_USER, lib::Registry::Key.c_str(), 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+        if (RegOpenKeyExA(HKEY_CURRENT_USER, lib::Registry::Path.c_str(), 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
             RegDeleteValueA(hKey, testKey.c_str());
             RegCloseKey(hKey);
         }
@@ -44,7 +44,7 @@ int main() {
     // clean up
     HKEY hKey;
 
-    if (RegOpenKeyExA(HKEY_CURRENT_USER, lib::Registry::Key.c_str(), 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+    if (RegOpenKeyExA(HKEY_CURRENT_USER, lib::Registry::Path.c_str(), 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
         RegDeleteValueA(hKey, testKey.c_str());
         RegCloseKey(hKey);
     }

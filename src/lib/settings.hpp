@@ -199,7 +199,7 @@ namespace lib::settings::leftPaneWidth {
  */
 namespace lib::settings::windowPosition {
     /** @brief Registry subkey. */
-    inline const char* const SubKey = "Window Position";
+    inline const char* const SubKey = "WindowPosition";
 
     /**
      * @brief Loads the setting from the registry.
@@ -212,4 +212,25 @@ namespace lib::settings::windowPosition {
      * @param input The setting to save.
      */
     bool save(RECT input);
+}
+
+/**
+ * @namespace lib::settings::viewLeftPanel
+ * @brief Left panel visibility toggle.
+ */
+namespace lib::settings::viewLeftPanel {
+    /** @brief Registry subkey. */
+    inline const char* const SubKey = "ViewLeftPanel";
+
+    /**
+     * @brief Loads the setting from the registry.
+     * @param output Reference to where the setting will be stored.
+     */
+    bool load(bool& output);
+
+    /**
+     * @brief Saves the setting to the registry.
+     * @param input The setting to save.
+     */
+    bool save(bool input);
 }

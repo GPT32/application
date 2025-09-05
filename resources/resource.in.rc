@@ -74,6 +74,7 @@ BEGIN
     POPUP "&View"
     BEGIN
         MENUITEM "&Always on Top",              IDM_VIEW_ALWAYS_ON_TOP
+        MENUITEM "&Left Panel",                 IDM_VIEW_LEFT_PANEL
     END
     POPUP "&Help"
     BEGIN

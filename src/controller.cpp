@@ -173,6 +173,16 @@ LRESULT Controller::OnCommand(HWND hWnd, WPARAM wParam) {
             lib::settings::alwaysOnTop::save(!alwaysOnTop);
             SetWindowPos(hWnd, !alwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             break;
+        case IDM_VIEW_LEFT_PANEL:
+            bool viewLeftPanel;
+
+            if (!lib::settings::viewLeftPanel::load(viewLeftPanel)) {
+                viewLeftPanel = true;
+            }
+
+            lib::settings::viewLeftPanel::save(!viewLeftPanel);
+            SendMessage(hWnd, WM_USER_UPDATE_LAYOUT, 0, 0);
+            break;
         default:
             break;
     }
@@ -248,6 +258,13 @@ LRESULT Controller::OnInitMenuPopup(HWND hWnd, WPARAM wParam, LPARAM lParam) {
             bool alwaysOnTop;
             lib::settings::alwaysOnTop::load(alwaysOnTop);
             CheckMenuItem(hMenu, IDM_VIEW_ALWAYS_ON_TOP, alwaysOnTop ? MF_CHECKED : MF_UNCHECKED);
+
+            bool viewLeftPanel;
+            if (!lib::settings::viewLeftPanel::load(viewLeftPanel)) {
+                viewLeftPanel = true;
+            }
+
+            CheckMenuItem(hMenu, IDM_VIEW_LEFT_PANEL, viewLeftPanel ? MF_CHECKED : MF_UNCHECKED);
             break;
         }
         default:

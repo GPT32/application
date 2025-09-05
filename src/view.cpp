@@ -199,6 +199,13 @@ LRESULT View::LayoutControls(HWND hWnd, LPARAM lParam) {
         leftPaneWidth = windowWidth / 6;
     }
 
+    // left pane visibility
+    bool viewLeftPane = true;
+
+    if (lib::settings::viewLeftPanel::load(viewLeftPane) && !viewLeftPane) {
+        leftPaneWidth = 0;
+    }
+
     // grab status bar dimensions
     RECT rcStatusBar = {};
     GetClientRect(hStatusBar, &rcStatusBar);

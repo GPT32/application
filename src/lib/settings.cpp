@@ -139,10 +139,10 @@ namespace lib::settings::windowPosition {
         DWORD top, bottom;
         DWORD left, right;
 
-        ok &= lib::Registry::Instance().read(std::string(SubKey) + "\\Top", output.top);
-        ok &= lib::Registry::Instance().read(std::string(SubKey) + "\\Bottom", output.bottom);
-        ok &= lib::Registry::Instance().read(std::string(SubKey) + "\\Left", output.left);
-        ok &= lib::Registry::Instance().read(std::string(SubKey) + "\\Right", output.right);
+        ok &= lib::Registry::Instance().read(std::string(SubKey) + "Top", output.top);
+        ok &= lib::Registry::Instance().read(std::string(SubKey) + "Bottom", output.bottom);
+        ok &= lib::Registry::Instance().read(std::string(SubKey) + "Left", output.left);
+        ok &= lib::Registry::Instance().read(std::string(SubKey) + "Right", output.right);
 
         lib::Registry::Instance().close();
 
@@ -152,13 +152,31 @@ namespace lib::settings::windowPosition {
     bool save(RECT input) {
         bool ok = true;
 
-        ok &= lib::Registry::Instance().write(std::string(SubKey) + "\\Top", input.top);
-        ok &= lib::Registry::Instance().write(std::string(SubKey) + "\\Bottom", input.bottom);
-        ok &= lib::Registry::Instance().write(std::string(SubKey) + "\\Left", input.left);
-        ok &= lib::Registry::Instance().write(std::string(SubKey) + "\\Right", input.right);
+        ok &= lib::Registry::Instance().write(std::string(SubKey) + "Top", input.top);
+        ok &= lib::Registry::Instance().write(std::string(SubKey) + "Bottom", input.bottom);
+        ok &= lib::Registry::Instance().write(std::string(SubKey) + "Left", input.left);
+        ok &= lib::Registry::Instance().write(std::string(SubKey) + "Right", input.right);
 
         lib::Registry::Instance().close();
 
         return ok;
+    }
+}
+
+namespace lib::settings::viewLeftPanel {
+    bool load(bool& output) {
+        DWORD value = 0;
+
+        if (!lib::Registry::Instance().read(SubKey, value)) {
+            output = false;
+            return false;
+        }
+
+        output = (value != 0);
+        return true;
+    }
+
+    bool save(bool input) {
+        return lib::Registry::Instance().write(SubKey, static_cast<DWORD>(input));
     }
 }

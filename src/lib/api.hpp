@@ -16,7 +16,7 @@ namespace lib::api {
     /**
      * @brief Builds authentication header.
      * @param apiKey    The OpenAI API key.
-     * @returns Headers Request headers.
+     * @return Headers Request headers.
      */
     lib::requests::Headers authenticate(const std::string& apiKey);
 
