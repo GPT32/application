@@ -14,11 +14,10 @@ int main() {
     // delete the test key/value pair if they already exist
     std::string value;
 
-    if (lib::registry::read(testKey, value)) {
+    if (lib::Registry::Instance().read(testKey, value)) {
         HKEY hKey;
 
-        if (RegOpenKeyExA(HKEY_CURRENT_USER, lib::registry::RegistryPath.c_str(), 0, KEY_SET_VALUE, &hKey) ==
-            ERROR_SUCCESS) {
+        if (RegOpenKeyExA(HKEY_CURRENT_USER, lib::Registry::Key.c_str(), 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
             RegDeleteValueA(hKey, testKey.c_str());
             RegCloseKey(hKey);
         }
@@ -26,27 +25,26 @@ int main() {
 
     // read and write tests
     std::string loadedValue;
-    assert(lib::registry::write(testKey, testValue));
-    assert(lib::registry::read(testKey, loadedValue));
+    assert(lib::Registry::Instance().write(testKey, testValue));
+    assert(lib::Registry::Instance().read(testKey, loadedValue));
     assert(loadedValue == testValue);
 
     // overwrite a key
     const std::string newValue = "OverwrittenValue";
-    assert(lib::registry::write(testKey, newValue));
-    assert(lib::registry::read(testKey, loadedValue));
+    assert(lib::Registry::Instance().write(testKey, newValue));
+    assert(lib::Registry::Instance().read(testKey, loadedValue));
     assert(loadedValue == newValue);
 
     // uint64 test
     uint64_t iNewValue = 1337;
     uint64_t iLoadedValue;
-    assert(lib::registry::write(testKey, iNewValue));
-    assert(lib::registry::read(testKey, iLoadedValue));
+    assert(lib::Registry::Instance().write(testKey, iNewValue));
+    assert(lib::Registry::Instance().read(testKey, iLoadedValue));
 
     // clean up
     HKEY hKey;
 
-    if (RegOpenKeyExA(HKEY_CURRENT_USER, lib::registry::RegistryPath.c_str(), 0, KEY_SET_VALUE, &hKey) ==
-        ERROR_SUCCESS) {
+    if (RegOpenKeyExA(HKEY_CURRENT_USER, lib::Registry::Key.c_str(), 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
         RegDeleteValueA(hKey, testKey.c_str());
         RegCloseKey(hKey);
     }

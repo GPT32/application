@@ -10,7 +10,7 @@
  */
 namespace lib::settings::apiKey {
     /** @brief Registry subkey. */
-    inline const char* const Key = "ApiKey";
+    inline const char* const SubKey = "ApiKey";
 
     /**
      * @brief Loads the setting from the registry.
@@ -31,7 +31,7 @@ namespace lib::settings::apiKey {
  */
 namespace lib::settings::adminApiKey {
     /** @brief Registry subkey. */
-    inline const char* const Key = "AdminApiKey";
+    inline const char* const SubKey = "AdminApiKey";
 
     /**
      * @brief Loads the setting from the registry.
@@ -52,7 +52,7 @@ namespace lib::settings::adminApiKey {
  */
 namespace lib::settings::alwaysOnTop {
     /** @brief Registry subkey. */
-    inline const char* const Key = "AlwaysOnTop";
+    inline const char* const SubKey = "AlwaysOnTop";
 
     /**
      * @brief Loads the setting from the registry.
@@ -73,7 +73,7 @@ namespace lib::settings::alwaysOnTop {
  */
 namespace lib::settings::model {
     /** @brief Registry subkey. */
-    inline const char* const Key = "Model";
+    inline const char* const SubKey = "Model";
 
     /**
      * @brief Loads the setting from the registry.
@@ -94,7 +94,7 @@ namespace lib::settings::model {
  */
 namespace lib::settings::statLastChecked {
     /** @brief Registry subkey. */
-    inline const char* const Key = "StatLastChecked";
+    inline const char* const SubKey = "StatLastChecked";
 
     /**
      * @brief Loads the setting from the registry.
@@ -115,7 +115,7 @@ namespace lib::settings::statLastChecked {
  */
 namespace lib::settings::statCost {
     /** @brief Registry subkey. */
-    inline const char* const Key = "StatCost";
+    inline const char* const SubKey = "StatCost";
 
     /**
      * @brief Loads the setting from the registry.
@@ -136,7 +136,7 @@ namespace lib::settings::statCost {
  */
 namespace lib::settings::statInputTokens {
     /** @brief Registry subkey. */
-    inline const char* const Key = "StatInputTokens";
+    inline const char* const SubKey = "StatInputTokens";
 
     /**
      * @brief Loads the setting from the registry.
@@ -157,7 +157,7 @@ namespace lib::settings::statInputTokens {
  */
 namespace lib::settings::statOutputTokens {
     /** @brief Registry subkey. */
-    inline const char* const Key = "StatOutputTokens";
+    inline const char* const SubKey = "StatOutputTokens";
 
     /**
      * @brief Loads the setting from the registry.
@@ -178,7 +178,7 @@ namespace lib::settings::statOutputTokens {
  */
 namespace lib::settings::leftPaneWidth {
     /** @brief Registry subkey. */
-    inline const char* const Key = "LeftPaneWidth";
+    inline const char* const SubKey = "LeftPaneWidth";
 
     /**
      * @brief Loads the setting from the registry.
@@ -199,7 +199,7 @@ namespace lib::settings::leftPaneWidth {
  */
 namespace lib::settings::windowPosition {
     /** @brief Registry subkey. */
-    inline const char* const Key = "Window Position";
+    inline const char* const SubKey = "Window Position";
 
     /**
      * @brief Loads the setting from the registry.
