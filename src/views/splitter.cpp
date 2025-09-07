@@ -68,6 +68,8 @@ LRESULT CALLBACK Splitter::WndProc(
             // update parent window
             HWND hParent = GetParent(hWnd);
             SendMessage(hParent, WM_USER_UPDATE_LAYOUT, 0, 0);
+            InvalidateRect(hParent, nullptr, TRUE);
+
             return 1;
         }
         case WM_MOUSEMOVE: {
