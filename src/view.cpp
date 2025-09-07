@@ -69,7 +69,7 @@ LRESULT View::CreateControls(HWND hWnd) {
     CreateWindowEx(0,
         "STATIC",
         "Create or select a project and chat to begin.",
-        WS_VISIBLE | WS_CHILD | SS_CENTER,
+        WS_VISIBLE | WS_CHILD | SS_CENTER | SS_ENDELLIPSIS,
         0,
         0,
         0,
@@ -215,7 +215,6 @@ LRESULT View::LayoutControls(HWND hWnd, LPARAM lParam) {
     int groupBoxHeight = 50;
     int richEditWidth = rightPaneWidth - SPACING;
     int richEditHeight = windowHeight - inputHeight - buttonHeight - statusBarHeight - (PADDING * 2);
-    int staticIntroWidth = rightPaneWidth / 3;
     int treeViewWidth = leftPaneWidth - PADDING;
     int treeViewHeight = windowHeight - groupBoxHeight - statusBarHeight - PADDING - SPACING;
     int splitterWidth = SPACING;
@@ -233,9 +232,9 @@ LRESULT View::LayoutControls(HWND hWnd, LPARAM lParam) {
     SetWindowPos(hSplitter, nullptr, SPACING + treeViewWidth, 0, splitterWidth, splitterHeight, SWP_NOZORDER);
     SetWindowPos(hStaticIntro,
         nullptr,
-        (leftPaneWidth - SPACING) + ((rightPaneWidth - staticIntroWidth + SPACING) / 2),
+        leftPaneWidth,
         (windowHeight - staticIntroheight) / 2,
-        staticIntroWidth,
+        rightPaneWidth,
         staticIntroheight,
         SWP_NOZORDER);
     SetWindowPos(hRichEdit, nullptr, leftPaneWidth, SPACING, richEditWidth, richEditHeight, SWP_NOZORDER);
